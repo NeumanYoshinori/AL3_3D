@@ -49,6 +49,8 @@ void GameScene::Update() {
 	// デバッグテキストの表示
 	ImGui::Begin("Debug1");
 	ImGui::Text("Kamata Tarou %d.%d.%d", 2050, 12, 31);
+	ImGui::End();
+	ImGui::Begin("Debug2");
 	// float3入力ボックス
 	ImGui::InputFloat3("InputFloat3", inputFloat3);
 	// float3スライダー
@@ -79,9 +81,12 @@ void GameScene::Draw() {
 	// 3Dモデル描画
 	model_->Draw(worldTransform_, debugCamera_->GetCamera(), textureHandle_);
 
-	// ラインを描画する
-	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1.0f, 0.0f, 0.0f, 1.0f});
-
 	// 3Dモデル描画後処理
 	Model::PostDraw();
+
+	// ラインを描画する
+	for (int i = 0; i < 11; i++) {
+		PrimitiveDrawer::GetInstance()->DrawLine3d({static_cast<float>(i), 0, 0}, {static_cast<float>(i), 10, 0}, {1.0f, 0.0f, 0.0f, 1.0f});
+		PrimitiveDrawer::GetInstance()->DrawLine3d({0, static_cast<float>(i), 0}, {10, static_cast<float>(i), 0}, {0.0f, 0.0f, 255.0f, 1.0f});
+	}
 }
