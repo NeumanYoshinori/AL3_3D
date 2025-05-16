@@ -110,9 +110,9 @@ void GameScene::Update() {
 
 void GameScene::Draw() {
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
-	Model::PreDraw(dxCommon->GetCommandList());
+	/*Model::PreDraw(dxCommon->GetCommandList());
 	player_->Draw();
-	Model::PostDraw();
+	Model::PostDraw();*/
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
