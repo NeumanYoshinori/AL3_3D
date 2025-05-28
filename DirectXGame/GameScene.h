@@ -2,6 +2,7 @@
 #include "KamataEngine.h"
 #include "Player.h"
 #include <vector>
+#include "Skydome.h"
 
 class GameScene {
 public:
@@ -35,4 +36,8 @@ private:
 	bool isDebugCameraActive_ = false;
 	// デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
+	// 天球
+	Skydome* skydome_ = nullptr;
+	// 3Dモデル
+	Model* modelSkydome_ = nullptr;
 };

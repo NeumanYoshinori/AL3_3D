@@ -1,9 +1,11 @@
 #include "GameScene.h"
 #include "Math.h"
+#include "worldTransform.h"
 
 using namespace KamataEngine;
 
-Math* matrix = new Math;
+Math* matrixBlock = new Math;
+worldTransform* worldTransformUpdateBlock_ = new worldTransform;
 
 GameScene::~GameScene() {
 	// 3Dモデルデータの解放
@@ -19,6 +21,10 @@ GameScene::~GameScene() {
 	worldTransformBlocks_.clear();
 
 	delete debugCamera_;
+
+	// 天球の解放
+	delete skydome_;
+	delete modelSkydome_;
 }
 
 void GameScene::Initialize() {
@@ -27,15 +33,16 @@ void GameScene::Initialize() {
 	// テクスチャを読み込む
 	textureHandle_ = TextureManager::Load("genosekuto.jpg");
 	// 3Dモデルデータの生成
-	model_ = Model::Create();
+	model_ = Model::CreateFromOBJ("player", true);
 	// カメラの初期化
+	camera_.farZ = 10.0f;
 	camera_.Initialize();
 	// 自キャラの生成
 	player_ = new Player();
 	// 自キャラの初期化
 	player_->Initialize(model_, textureHandle_, &camera_);
 	// 3Dモデルデータの生成
-	modelBlock_ = Model::Create();
+	modelBlock_ = Model::CreateFromOBJ("block", true);
 
 	// 要素数
 	const uint32_t kNumBlockVirtical = 10;
@@ -72,6 +79,12 @@ void GameScene::Initialize() {
 	}
 
 	debugCamera_ = new DebugCamera(1280, 720);
+
+	// 天球の生成
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	// 天球の初期化
+	skydome_ = new Skydome();
+	skydome_->Initialize(modelSkydome_, &camera_);
 }
 
 void GameScene::Update() {
@@ -83,10 +96,7 @@ void GameScene::Update() {
 			if (!worldTransformBlock)
 				continue;
 
-			worldTransformBlock->matWorld_ = matrix->MakeAffineMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
-
-			// 定数バッファに転送する
-			worldTransformBlock->TransferMatrix();
+			worldTransformUpdateBlock_->WorldTransformUpdate(*worldTransformBlock);
 		}
 	}
 
@@ -106,22 +116,24 @@ void GameScene::Update() {
 		camera_.UpdateMatrix();
 	}
 	#endif
+
+	// 天球の更新
+	skydome_->Update();
 }
 
 void GameScene::Draw() {
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
-	/*Model::PreDraw(dxCommon->GetCommandList());
-	player_->Draw();
-	Model::PostDraw();*/
+	Model::PreDraw(dxCommon->GetCommandList());
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
 				continue;
 
-			Model::PreDraw(dxCommon->GetCommandList());
 			modelBlock_->Draw(*worldTransformBlock, camera_);
-			Model::PostDraw();
 		}
 	}
+
+	skydome_->Draw();
+	Model::PostDraw();
 }
