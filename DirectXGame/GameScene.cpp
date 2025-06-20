@@ -42,8 +42,12 @@ void GameScene::Initialize() {
 	camera_.Initialize();
 	// 自キャラの生成
 	player_ = new Player();
+
+	// 座標をマップチップ番号で指定
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+
 	// 自キャラの初期化
-	player_->Initialize(model_, textureHandle_, &camera_);
+	player_->Initialize(model_, &camera_, playerPosition);
 
 	debugCamera_ = new DebugCamera(1280, 720);
 

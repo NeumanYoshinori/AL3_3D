@@ -1,4 +1,5 @@
 #include "Math.h"
+#include <numbers>
 
 // 行列の積
 Matrix4x4 Math::Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
@@ -126,4 +127,10 @@ Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const
 	result = Multiply(scaleMatrix, Multiply(rotateXYZMatrix, translateMatrix));
 
 	return result;
+}
+
+float Math::EaseInOut(float destinationY, float turnY, float timer) {
+	float easedTimer = -(std::numbers::pi_v<float> * timer - 1.0f) / 2.0f;
+	float direction = (1.0f - easedTimer) * turnY + easedTimer * destinationY;
+	return direction;
 }
