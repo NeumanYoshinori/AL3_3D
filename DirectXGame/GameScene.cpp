@@ -9,7 +9,7 @@ worldTransform* worldTransformUpdateBlock_ = new worldTransform;
 
 GameScene::~GameScene() {
 	// 3Dモデルデータの解放
-	delete model_;
+	delete modelPlayer_;
 	delete player_;
 	delete modelBlock_;
 
@@ -28,28 +28,32 @@ GameScene::~GameScene() {
 
 	// マップチップフィールドの解放
 	delete mapChipField_;
+
+	// カメラコントローラの解放
+	delete cameraController_;
 }
 
 void GameScene::Initialize() {
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 	// テクスチャを読み込む
-	textureHandle_ = TextureManager::Load("genosekuto.jpg");
+	// textureHandle_ = TextureManager::Load("genosekuto.jpg");
+	// sprite_ = Sprite::Create(textureHandle_, {100, 50)};
+	// model_ = Model::Create();
 	// 3Dモデルデータの生成
-	model_ = Model::CreateFromOBJ("player", true);
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	// カメラの初期化
-	camera_.farZ = 10.0f;
 	camera_.Initialize();
 	// 自キャラの生成
 	player_ = new Player();
 
 	// 座標をマップチップ番号で指定
-	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(2, 18);
 
 	// 自キャラの初期化
-	player_->Initialize(model_, &camera_, playerPosition);
+	player_->Initialize(modelPlayer_, &camera_, playerPosition);
 
-	debugCamera_ = new DebugCamera(1280, 720);
+	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
 	// 天球の生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
@@ -59,29 +63,32 @@ void GameScene::Initialize() {
 
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
-
 	GenerateBlocks();
+
+	// カメラコントローラの初期化
+	cameraController_ = new CameraController(); // 生成
+	cameraController_->Initialize(&camera_); // 初期化
+	cameraController_->SetTarget(player_); // 追従対象セット
+	cameraController_->Reset(); // リセット
+
+	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
+	cameraController_->SetMovableArea(cameraArea);
 }
 
 void GameScene::Update() {
 	player_->Update();
 
-	// ブロックの更新
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock)
-				continue;
+	// 天球の更新
+	skydome_->Update();
 
-			worldTransformUpdateBlock_->WorldTransformUpdate(*worldTransformBlock);
-		}
-	}
-
-	debugCamera_->Update();
+	// カメラコントローラの更新
+	cameraController_->Update();
 
 	#ifdef _DEBUG
-	if (Input::GetInstance()->TriggerKey(DIK_0)) {
-		isDebugCameraActive_ = true;
+	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+		isDebugCameraActive_ = !isDebugCameraActive_;
 	}
+	#endif
 
 	if (isDebugCameraActive_) {
 		debugCamera_->Update();
@@ -91,10 +98,18 @@ void GameScene::Update() {
 	} else {
 		camera_.UpdateMatrix();
 	}
-	#endif
 
-	// 天球の更新
-	skydome_->Update();
+	// ブロックの更新
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock)
+				continue;
+
+			worldTransformUpdateBlock_->WorldTransformUpdate(*worldTransformBlock);
+		}
+	}
+
+	debugCamera_->Update();
 }
 
 void GameScene::Draw() {
@@ -112,7 +127,7 @@ void GameScene::Draw() {
 
 	// ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
 				continue;
 

@@ -130,7 +130,17 @@ Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const
 }
 
 float Math::EaseInOut(float destinationY, float turnY, float timer) {
-	float easedTimer = -(std::numbers::pi_v<float> * timer - 1.0f) / 2.0f;
+	float easedTimer = -(std::tan(std::numbers::pi_v<float> * timer - 1.0f)) / 2.0f;
 	float direction = (1.0f - easedTimer) * turnY + easedTimer * destinationY;
 	return direction;
+}
+
+// 線形補間
+Vector3 Math::Lerp(const Vector3& a, const Vector3& b, float t) {
+	Vector3 result{};
+	result.x = (1.0f - t) * a.x + t * b.x;
+	result.y = (1.0f - t) * a.y + t * b.y;
+	result.z = (1.0f - t) * a.z + t * b.z;
+
+	return result;
 }

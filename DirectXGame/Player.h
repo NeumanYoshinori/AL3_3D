@@ -21,6 +21,12 @@ public:
 	// 描画
 	void Draw();
 
+	// ワールドトランスフォームのgetter
+	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
+
+	// 速度のgetter
+	const Vector3& GetVelocity() const { return velocity_; }
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -31,11 +37,16 @@ private:
 	// カメラ
 	Camera* camera_ = nullptr;
 
+	// 移動量
 	Vector3 velocity_ = {};
-	static inline const float kAcceleration = 0.05f;
+	// フレームごとの加速度
+	static inline const float kAcceleration = 0.01f;
+	// 非入力時の摩擦係数
 	static inline const float kAttenuation = 0.05f;
-	static inline const float kLimitRunSpeed = 0.5f;
+	// 最高速度
+	static inline const float kLimitRunSpeed = 0.3f;
 
+	// 顔の向き
 	LRDirection lrDirection_ = LRDirection::kRight;
 	// 旋回開始時の角度
 	float turnFirstRotationY_ = 0.0f;
