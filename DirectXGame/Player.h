@@ -3,6 +3,8 @@
 
 using namespace KamataEngine;
 
+class MapChipField;
+
 // 自キャラ
 class Player {
 public:
@@ -12,11 +14,44 @@ public:
 		kLeft,
 	};
 
+	struct CollisionMapInfo {
+		bool hitCeiling_ = false;
+		bool landing_ = false;
+		bool hitWall_ = false;
+		Vector3 moveAmount_;
+	};
+
+	enum Corner {
+		kRightBottom, // 右下
+		kLeftBottom, // 左下
+		kRightTop, // 右上
+		kLeftTop, // 左上
+
+		kNumCorner // 要素数
+	};
+
 	// 初期化
 	void Initialize(Model* model, Camera* camera, const Vector3& position);
 
 	// 更新
 	void Update();
+
+	// 移動入力
+	void Input();
+
+	// マップ衝突判定
+	void MapCollision(CollisionMapInfo& info);
+
+	// 上方向
+	void IsHitTop(CollisionMapInfo& info);
+	// 下方向
+	//void IsHitBottom(CollisionMapInfo& info);
+	//// 右方向
+	//void IsHitRight(CollisionMapInfo& info);
+	//// 左方向
+	//void IsHitLeft(CollisionMapInfo& info);
+
+	Vector3 CornerPosition(const Vector3& center, Corner corner);
 
 	// 描画
 	void Draw();
@@ -27,15 +62,28 @@ public:
 	// 速度のgetter
 	const Vector3& GetVelocity() const { return velocity_; }
 
+	// マップチップフィールドのsetter
+	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
+
+	void Move(const CollisionMapInfo& info);
+
+	void CeilingHit(const CollisionMapInfo& info);
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
+
 	// モデル
 	Model* model_ = nullptr;
+
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
+
 	// カメラ
 	Camera* camera_ = nullptr;
+
+	// マップチップによるフィールド
+	MapChipField* mapChipField_ = nullptr;
 
 	// 移動量
 	Vector3 velocity_ = {};
@@ -64,4 +112,9 @@ private:
 	static inline const float kGravityAcceleration = 0.98f;
 	// ジャンプ初速
 	static inline const float kLimitFallSpeed = 0.5f;
+
+	// キャラクターの当たり判定のサイズ
+	static inline const float kWidth = 0.8f;
+	static inline const float kHeight = 0.8f;
+	static inline const float kBlank = 0.2f;
 };

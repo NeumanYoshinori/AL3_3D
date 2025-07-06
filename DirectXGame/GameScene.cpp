@@ -44,14 +44,20 @@ void GameScene::Initialize() {
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	// カメラの初期化
 	camera_.Initialize();
+
+	// マップチップフィールドの生成
+	mapChipField_ = new MapChipField;
+	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
+	// マップチップフィールドの初期化
+	GenerateBlocks();
+
 	// 自キャラの生成
 	player_ = new Player();
-
 	// 座標をマップチップ番号で指定
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(2, 18);
-
 	// 自キャラの初期化
 	player_->Initialize(modelPlayer_, &camera_, playerPosition);
+	player_->SetMapChipField(mapChipField_);
 
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
@@ -60,10 +66,6 @@ void GameScene::Initialize() {
 	// 天球の初期化
 	skydome_ = new Skydome();
 	skydome_->Initialize(modelSkydome_, &camera_);
-
-	mapChipField_ = new MapChipField;
-	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
-	GenerateBlocks();
 
 	// カメラコントローラの初期化
 	cameraController_ = new CameraController(); // 生成
@@ -77,6 +79,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 	player_->Update();
+	player_->Input();
 
 	// 天球の更新
 	skydome_->Update();
