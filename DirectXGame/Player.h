@@ -15,9 +15,9 @@ public:
 	};
 
 	struct CollisionMapInfo {
-		bool hitCeiling_ = false;
-		bool landing_ = false;
-		bool hitWall_ = false;
+		bool hitCeiling = false;
+		bool hitGround = false;
+		bool hitWall = false;
 		Vector3 moveAmount_;
 	};
 
@@ -42,14 +42,16 @@ public:
 	// マップ衝突判定
 	void MapCollision(CollisionMapInfo& info);
 
+	std::array<Vector3, kNumCorner>PositionsNew(std::array<Vector3, kNumCorner>, const CollisionMapInfo& info);
+
 	// 上方向
 	void IsHitTop(CollisionMapInfo& info);
 	// 下方向
-	//void IsHitBottom(CollisionMapInfo& info);
+	void IsHitBottom(CollisionMapInfo& info);
 	//// 右方向
-	//void IsHitRight(CollisionMapInfo& info);
+	void IsHitRight(CollisionMapInfo& info);
 	//// 左方向
-	//void IsHitLeft(CollisionMapInfo& info);
+	void IsHitLeft(CollisionMapInfo& info);
 
 	Vector3 CornerPosition(const Vector3& center, Corner corner);
 
@@ -65,9 +67,16 @@ public:
 	// マップチップフィールドのsetter
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
+	// 判定結果を反映して移動させる
 	void Move(const CollisionMapInfo& info);
 
+	// 天井に接触している場合の処理
 	void CeilingHit(const CollisionMapInfo& info);
+
+	// 接地している場合の処理
+	void ChangeLanding(const CollisionMapInfo& info);
+
+	void WallHit(const CollisionMapInfo& info);
 
 private:
 	// ワールド変換データ
@@ -117,4 +126,13 @@ private:
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
 	static inline const float kBlank = 0.2f;
+
+	// 着地時の速度減衰率
+	static inline const float kAttenuationLanding = 0.1f;
+
+	// 微小な数値
+	float smallNum = 1.0f;
+
+	// 着地時の速度減衰率
+	static inline const float kAttenuationWall = 0.1f;
 };
