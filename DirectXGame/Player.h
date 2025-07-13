@@ -131,8 +131,8 @@ private:
 	static inline const float kAttenuationLanding = 0.1f;
 
 	// 微小な数値
-	float smallNum = 1.0f;
+	float smallNum = 0.1f;
 
 	// 着地時の速度減衰率
-	static inline const float kAttenuationWall = 0.1f;
+	static inline const float kAttenuationWall = 0.5f;
 };
