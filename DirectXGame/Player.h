@@ -134,5 +134,5 @@ private:
 	float smallNum = 0.1f;
 
 	// 着地時の速度減衰率
-	static inline const float kAttenuationWall = 0.5f;
+	static inline const float kAttenuationWall = 0.4f;
 };
