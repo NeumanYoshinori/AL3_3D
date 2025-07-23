@@ -144,3 +144,16 @@ Vector3 Math::Lerp(const Vector3& a, const Vector3& b, float t) {
 
 	return result;
 }
+
+// 内積
+float Math::Dot(const Vector3& v1, const Vector3& v2) {
+	float result = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+
+	return result;
+}
+
+// 度をラジアンに変換
+float Math::ToRadians(float degree) {
+	float result = degree * std::numbers::pi_v<float> / 180.0f;
+	return result;
+}
