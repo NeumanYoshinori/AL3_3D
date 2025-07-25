@@ -67,12 +67,6 @@ public:
 	// マップチップフィールドのsetter
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
-	// 判定結果を反映して移動させる
-	void Move(const CollisionMapInfo& info);
-
-	// 天井に接触している場合の処理
-	void CeilingHit(const CollisionMapInfo& info);
-
 	// 接地している場合の処理
 	void ChangeLanding(const CollisionMapInfo& info);
 
@@ -97,7 +91,7 @@ private:
 	// 移動量
 	Vector3 velocity_ = {};
 	// フレームごとの加速度
-	static inline const float kAcceleration = 0.01f;
+	static inline const float kAcceleration = 0.1f;
 	// 非入力時の摩擦係数
 	static inline const float kAttenuation = 0.05f;
 	// 最高速度
@@ -125,14 +119,14 @@ private:
 	// キャラクターの当たり判定のサイズ
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
-	static inline const float kBlank = 0.2f;
+	static inline const float kBlank = 0.04f;
 
 	// 着地時の速度減衰率
-	static inline const float kAttenuationLanding = 0.1f;
+	static inline const float kAttenuationLanding = 0.0f;
 
 	// 微小な数値
-	float smallNum = 0.1f;
+	float smallNum = 0.06f;
 
 	// 着地時の速度減衰率
-	static inline const float kAttenuationWall = 0.4f;
+	static inline const float kAttenuationWall = 0.2f;
 };

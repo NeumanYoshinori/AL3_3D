@@ -15,9 +15,7 @@ void CameraController::Update() {
 	const Vector3& targetVelocity = target_->GetVelocity();
 
 	// 追従対象とオフセットと追従対象の速度からカメラの目標座標を計算
-	destination_.x = targetWorldTransform.translation_.x + targetOffset_.x + targetVelocity.x * kVelocityBias;
-	destination_.y = targetWorldTransform.translation_.y + targetOffset_.y + targetVelocity.y * kVelocityBias;
-	destination_.z = targetWorldTransform.translation_.z + targetOffset_.z + targetVelocity.z * kVelocityBias;
+	destination_ = targetWorldTransform.translation_ + targetOffset_ + targetVelocity * kVelocityBias;
 
 	Math* math = new Math;
 	// 座標補間によりゆったり追従
@@ -43,7 +41,5 @@ void CameraController::Reset() {
 	// 追従対象のワールドトランスフォームを参照
 	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
 	// 追従対象とオフセットからカメラの座標を計算
-	camera_->translation_.x = targetWorldTransform.translation_.x + targetOffset_.x;
-	camera_->translation_.y = targetWorldTransform.translation_.y + targetOffset_.y;
-	camera_->translation_.z = targetWorldTransform.translation_.z + targetOffset_.z;
+	camera_->translation_ = targetWorldTransform.translation_ + targetOffset_;
 }
