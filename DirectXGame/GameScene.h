@@ -5,6 +5,7 @@
 #include "Skydome.h"
 #include "MapChipField.h"
 #include "CameraController.h"
+#include "Enemy.h"
 
 class GameScene {
 public:
@@ -57,4 +58,8 @@ private:
 
 	// カメラコントローラ
 	CameraController* cameraController_ = nullptr;
+
+	// 敵
+	Enemy* enemy_ = nullptr;
+	Model* modelEnemy_ = nullptr;
 };

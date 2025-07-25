@@ -31,6 +31,9 @@ GameScene::~GameScene() {
 
 	// カメラコントローラの解放
 	delete cameraController_;
+
+	// 敵の解放
+	delete enemy_;
 }
 
 void GameScene::Initialize() {
@@ -71,6 +74,13 @@ void GameScene::Initialize() {
 
 	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
 	cameraController_->SetMovableArea(cameraArea);
+
+	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
+	// 敵の生成
+	enemy_ = new Enemy;
+	// 座標をマップチップ番号で指定
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14, 18);
+	enemy_->Initialize(modelEnemy_, &camera_, enemyPosition);
 }
 
 void GameScene::Update() {
@@ -82,6 +92,9 @@ void GameScene::Update() {
 
 	// カメラコントローラの更新
 	cameraController_->Update();
+
+	// 敵の更新
+	enemy_->Update();
 
 	#ifdef _DEBUG
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
@@ -133,6 +146,9 @@ void GameScene::Draw() {
 			modelBlock_->Draw(*worldTransformBlock, camera_);
 		}
 	}
+
+	// 敵の描画
+	enemy_->Draw();
 
 	Model::PostDraw();
 
