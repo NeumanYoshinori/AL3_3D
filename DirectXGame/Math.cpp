@@ -1,31 +1,7 @@
 #include "Math.h"
 #include <numbers>
 
-// 行列の積
-Matrix4x4 Math::Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
-	Matrix4x4 result = {};
-
-	result.m[0][0] = m1.m[0][0] * m2.m[0][0] + m1.m[0][1] * m2.m[1][0] + m1.m[0][2] * m2.m[2][0] + m1.m[0][3] * m2.m[3][0];
-	result.m[0][1] = m1.m[0][0] * m2.m[0][1] + m1.m[0][1] * m2.m[1][1] + m1.m[0][2] * m2.m[2][1] + m1.m[0][3] * m2.m[3][1];
-	result.m[0][2] = m1.m[0][0] * m2.m[0][2] + m1.m[0][1] * m2.m[1][2] + m1.m[0][2] * m2.m[2][2] + m1.m[0][3] * m2.m[3][2];
-	result.m[0][3] = m1.m[0][0] * m2.m[0][3] + m1.m[0][1] * m2.m[1][3] + m1.m[0][2] * m2.m[2][3] + m1.m[0][3] * m2.m[3][3];
-	result.m[1][0] = m1.m[1][0] * m2.m[0][0] + m1.m[1][1] * m2.m[1][0] + m1.m[1][2] * m2.m[2][0] + m1.m[1][3] * m2.m[3][0];
-	result.m[1][1] = m1.m[1][0] * m2.m[0][1] + m1.m[1][1] * m2.m[1][1] + m1.m[1][2] * m2.m[2][1] + m1.m[1][3] * m2.m[3][1];
-	result.m[1][2] = m1.m[1][0] * m2.m[0][2] + m1.m[1][1] * m2.m[1][2] + m1.m[1][2] * m2.m[2][2] + m1.m[1][3] * m2.m[3][2];
-	result.m[1][3] = m1.m[1][0] * m2.m[0][3] + m1.m[1][1] * m2.m[1][3] + m1.m[1][2] * m2.m[2][3] + m1.m[1][3] * m2.m[3][3];
-	result.m[2][0] = m1.m[2][0] * m2.m[0][0] + m1.m[2][1] * m2.m[1][0] + m1.m[2][2] * m2.m[2][0] + m1.m[2][3] * m2.m[3][0];
-	result.m[2][1] = m1.m[2][0] * m2.m[0][1] + m1.m[2][1] * m2.m[1][1] + m1.m[2][2] * m2.m[2][1] + m1.m[2][3] * m2.m[3][1];
-	result.m[2][2] = m1.m[2][0] * m2.m[0][2] + m1.m[2][1] * m2.m[1][2] + m1.m[2][2] * m2.m[2][2] + m1.m[2][3] * m2.m[3][2];
-	result.m[2][3] = m1.m[2][0] * m2.m[0][3] + m1.m[2][1] * m2.m[1][3] + m1.m[2][2] * m2.m[2][3] + m1.m[2][3] * m2.m[3][3];
-	result.m[3][0] = m1.m[3][0] * m2.m[0][0] + m1.m[3][1] * m2.m[1][0] + m1.m[3][2] * m2.m[2][0] + m1.m[3][3] * m2.m[3][0];
-	result.m[3][1] = m1.m[3][0] * m2.m[0][1] + m1.m[3][1] * m2.m[1][1] + m1.m[3][2] * m2.m[2][1] + m1.m[3][3] * m2.m[3][1];
-	result.m[3][2] = m1.m[3][0] * m2.m[0][2] + m1.m[3][1] * m2.m[1][2] + m1.m[3][2] * m2.m[2][2] + m1.m[3][3] * m2.m[3][2];
-	result.m[3][3] = m1.m[3][0] * m2.m[0][3] + m1.m[3][1] * m2.m[1][3] + m1.m[3][2] * m2.m[2][3] + m1.m[3][3] * m2.m[3][3];
-
-	return result;
-}
-
-Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const Vector3& translate) {
+Matrix4x4 Math::MakeScaleMatrix(const Vector3& scale) {
 	// 拡大縮小行列
 	Matrix4x4 scaleMatrix = {};
 	scaleMatrix.m[0][0] = scale.x;
@@ -45,6 +21,10 @@ Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const
 	scaleMatrix.m[3][2] = 0.0f;
 	scaleMatrix.m[3][3] = 1.0f;
 
+	return scaleMatrix;
+}
+
+Matrix4x4 Math::MakeRotateXMatrix(float theta) {
 	// X軸回転行列
 	Matrix4x4 rotateXMatrix = {};
 	rotateXMatrix.m[0][0] = 1.0f;
@@ -52,45 +32,53 @@ Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const
 	rotateXMatrix.m[0][2] = 0.0f;
 	rotateXMatrix.m[0][3] = 0.0f;
 	rotateXMatrix.m[1][0] = 0.0f;
-	rotateXMatrix.m[1][1] = std::cos(rot.x);
-	rotateXMatrix.m[1][2] = std::sin(rot.x);
+	rotateXMatrix.m[1][1] = std::cos(theta);
+	rotateXMatrix.m[1][2] = std::sin(theta);
 	rotateXMatrix.m[1][3] = 0.0f;
 	rotateXMatrix.m[2][0] = 0.0f;
-	rotateXMatrix.m[2][1] = -std::sin(rot.x);
-	rotateXMatrix.m[2][2] = std::cos(rot.x);
+	rotateXMatrix.m[2][1] = -std::sin(theta);
+	rotateXMatrix.m[2][2] = std::cos(theta);
 	rotateXMatrix.m[2][3] = 0.0f;
 	rotateXMatrix.m[3][0] = 0.0f;
 	rotateXMatrix.m[3][1] = 0.0f;
 	rotateXMatrix.m[3][2] = 0.0f;
 	rotateXMatrix.m[3][3] = 1.0f;
 
+	return rotateXMatrix;
+}
+
+Matrix4x4 Math::MakeRotateYMatrix(float theta) {
 	// Y軸回転行列
 	Matrix4x4 rotateYMatrix = {};
-	rotateYMatrix.m[0][0] = std::cos(rot.y);
+	rotateYMatrix.m[0][0] = std::cos(theta);
 	rotateYMatrix.m[0][1] = 0.0f;
-	rotateYMatrix.m[0][2] = -std::sin(rot.y);
+	rotateYMatrix.m[0][2] = -std::sin(theta);
 	rotateYMatrix.m[0][3] = 0.0f;
 	rotateYMatrix.m[1][0] = 0.0f;
 	rotateYMatrix.m[1][1] = 1.0f;
 	rotateYMatrix.m[1][2] = 0.0f;
 	rotateYMatrix.m[1][3] = 0.0f;
-	rotateYMatrix.m[2][0] = std::sin(rot.y);
+	rotateYMatrix.m[2][0] = std::sin(theta);
 	rotateYMatrix.m[2][1] = 0.0f;
-	rotateYMatrix.m[2][2] = std::cos(rot.y);
+	rotateYMatrix.m[2][2] = std::cos(theta);
 	rotateYMatrix.m[2][3] = 0.0f;
 	rotateYMatrix.m[3][0] = 0.0f;
 	rotateYMatrix.m[3][1] = 0.0f;
 	rotateYMatrix.m[3][2] = 0.0f;
 	rotateYMatrix.m[3][3] = 1.0f;
 
+	return rotateYMatrix;
+}
+
+Matrix4x4 Math::MakeRotateZMatrix(float theta) {
 	// Z軸回転行列
 	Matrix4x4 rotateZMatrix = {};
-	rotateZMatrix.m[0][0] = std::cos(rot.z);
-	rotateZMatrix.m[0][1] = std::sin(rot.z);
+	rotateZMatrix.m[0][0] = std::cos(theta);
+	rotateZMatrix.m[0][1] = std::sin(theta);
 	rotateZMatrix.m[0][2] = 0.0f;
 	rotateZMatrix.m[0][3] = 0.0f;
-	rotateZMatrix.m[1][0] = -std::sin(rot.z);
-	rotateZMatrix.m[1][1] = std::cos(rot.z);
+	rotateZMatrix.m[1][0] = -std::sin(theta);
+	rotateZMatrix.m[1][1] = std::cos(theta);
 	rotateZMatrix.m[1][2] = 0.0f;
 	rotateZMatrix.m[1][3] = 0.0f;
 	rotateZMatrix.m[2][0] = 0.0f;
@@ -102,9 +90,11 @@ Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const
 	rotateZMatrix.m[3][2] = 0.0f;
 	rotateZMatrix.m[3][3] = 1.0f;
 
-	// XYZ軸回転行列
-	Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
+	return rotateZMatrix;
+}
 
+Matrix4x4 Math::MakeTranslateMatrix(const Vector3& translate) {
+	// 平行移動行列
 	Matrix4x4 translateMatrix = {};
 	translateMatrix.m[0][0] = 1.0f;
 	translateMatrix.m[0][1] = 0.0f;
@@ -123,19 +113,36 @@ Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const
 	translateMatrix.m[3][2] = translate.z;
 	translateMatrix.m[3][3] = 1.0f;
 
-	Matrix4x4 result = {};
-	result = Multiply(scaleMatrix, Multiply(rotateXYZMatrix, translateMatrix));
+	return translateMatrix;
+}
+
+Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const Vector3& translate) {
+	// 拡大縮小行列
+	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
+
+	// X軸回転行列
+	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rot.x);
+	// Y軸回転行列
+	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rot.y);
+	// Z軸回転行列
+	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rot.z);
+	// XYZ軸回転行列
+	Matrix4x4 rotateXYZMatrix = rotateXMatrix * rotateYMatrix * rotateZMatrix;
+
+	// 平行移動行列
+	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
+
+	Matrix4x4 result = scaleMatrix * rotateXYZMatrix * translateMatrix;
 
 	return result;
 }
 
 float Math::EaseInOut(float destinationY, float turnY, float timer) {
-	float easedTimer = -(std::tan(std::numbers::pi_v<float> * timer - 1.0f)) / 2.0f;
-	float direction = (1.0f - easedTimer) * turnY + easedTimer * destinationY;
-	return direction;
+	float easedTimer = -(std::cosf(std::numbers::pi_v<float> * timer) - 1.0f) / 2.0f;
+	return Lerp(destinationY, turnY, easedTimer);
 }
 
-// 線形補間
+// 線形補間(Vector3)
 Vector3 Math::Lerp(const Vector3& a, const Vector3& b, float t) {
 	Vector3 result{};
 	result.x = (1.0f - t) * a.x + t * b.x;
@@ -145,18 +152,14 @@ Vector3 Math::Lerp(const Vector3& a, const Vector3& b, float t) {
 	return result;
 }
 
-// 内積
-float Math::Dot(const Vector3& v1, const Vector3& v2) {
-	float result = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+// 線形補間(float)
+float Math::Lerp(float x1, float x2, float t) { return (1.0f - t) * x1 + t * x2; }
 
-	return result;
-}
+// 内積
+float Math::Dot(const Vector3& v1, const Vector3& v2) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
 
 // 度をラジアンに変換
-float Math::ToRadians(float degree) {
-	float result = degree * std::numbers::pi_v<float> / 180.0f;
-	return result;
-}
+float Math::ToRadians(float degree) { return degree * std::numbers::pi_v<float> / 180.0f; }
 
 const Vector3 operator+(const Vector3& v1, const Vector3& v2) {
 	Vector3 temp(v1);

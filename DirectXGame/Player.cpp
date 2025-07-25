@@ -115,7 +115,7 @@ void Player::Input() {
 
 		if (Input::GetInstance()->PushKey(DIK_UP)) {
 			// ジャンプ初速
-			velocity_ = Vector3(0, kJumpAcceleration / 60.0f, 0);
+			velocity_.y = kJumpAcceleration / 60.0f;
 		}
 		// 空中
 	} else {
