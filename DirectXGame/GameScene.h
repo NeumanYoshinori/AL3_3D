@@ -20,7 +20,11 @@ public:
 	// 描画
 	void Draw();
 
+	// ブロックの生成
 	void GenerateBlocks();
+
+	// 全ての当たり判定を行う
+	void CheckAllCollisions();
 
 private:
 	// テクスチャハンドル
@@ -60,6 +64,6 @@ private:
 	CameraController* cameraController_ = nullptr;
 
 	// 敵
-	Enemy* enemy_ = nullptr;
+	std::list<Enemy*> enemies_;
 	Model* modelEnemy_ = nullptr;
 };

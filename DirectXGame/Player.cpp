@@ -27,7 +27,7 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 void Player::Update() {
 	Input();
 	// 衝突情報を初期化
-	CollisionMapInfo collisionMapInfo = {};
+	CollisionMapInfo collisionMapInfo{};
 	// 移動量に速度の値をコピー
 	collisionMapInfo.moveAmount_ = velocity_;
 	collisionMapInfo.hitGround = false;
@@ -68,7 +68,7 @@ void Player::Input() {
 	if (onGround_) {
 		if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
 			// 左右加速
-			Vector3 acceleration = {};
+			Vector3 acceleration{};
 			if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
 				if (velocity_.x < 0.0f) {
 					// 速度と逆方向に入力中は急ブレーキ
@@ -396,6 +396,34 @@ void Player::WallHit(const CollisionMapInfo& info) {
 	if (info.hitWall) {
 		velocity_.x *= (1.0f - kAttenuationWall);
 	}
+}
+
+Vector3 Player::GetWorldPosition() {
+	// ワールド座標を入れる変数
+	Vector3 worldPos{};
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
+}
+
+AABB Player::GetAABB() {
+	Vector3 worldPos = GetWorldPosition();
+
+	AABB aabb{};
+
+	aabb.min = {worldPos.x - kWidth / 2.0f, worldPos.y - kHeight / 2.0f, worldPos.z - kWidth / 2.0f};
+	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kWidth / 2.0f};
+
+	return aabb;
+}
+
+void Player::OnCollision(const Enemy* enemy) {
+	(void)enemy;
+	// ジャンプ開始
+	velocity_ += Vector3(0, 1.0f, 0);
 }
 
 void Player::Draw() {

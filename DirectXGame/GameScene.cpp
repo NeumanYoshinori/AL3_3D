@@ -1,11 +1,13 @@
 #include "GameScene.h"
 #include "Math.h"
 #include "worldTransform.h"
+#include "AABB.h"
 
 using namespace KamataEngine;
 
 Math* matrixBlock = new Math;
 worldTransform* worldTransformUpdateBlock_ = new worldTransform;
+Aabb* aabb = new Aabb;
 
 GameScene::~GameScene() {
 	// 3Dモデルデータの解放
@@ -33,7 +35,9 @@ GameScene::~GameScene() {
 	delete cameraController_;
 
 	// 敵の解放
-	delete enemy_;
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
 }
 
 void GameScene::Initialize() {
@@ -76,11 +80,17 @@ void GameScene::Initialize() {
 	cameraController_->SetMovableArea(cameraArea);
 
 	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
-	// 敵の生成
-	enemy_ = new Enemy;
-	// 座標をマップチップ番号で指定
-	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14, 18);
-	enemy_->Initialize(modelEnemy_, &camera_, enemyPosition);
+	// 3Dモデルデータの生成
+	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
+	for (uint32_t i = 0; i < 3; ++i) {
+		// 敵の生成
+		Enemy* newEnemy_ = new Enemy();
+		// 座標をマップチップ番号で指定
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14 + i * 2, 14 + i * 2);
+		newEnemy_->Initialize(modelEnemy_, &camera_, enemyPosition);
+
+		enemies_.push_back(newEnemy_);
+	}
 }
 
 void GameScene::Update() {
@@ -94,7 +104,9 @@ void GameScene::Update() {
 	cameraController_->Update();
 
 	// 敵の更新
-	enemy_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
 
 	#ifdef _DEBUG
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
@@ -122,6 +134,9 @@ void GameScene::Update() {
 	}
 
 	debugCamera_->Update();
+
+	// 全ての当たり判定を行う
+	CheckAllCollisions();
 }
 
 void GameScene::Draw() {
@@ -147,8 +162,10 @@ void GameScene::Draw() {
 		}
 	}
 
-	// 敵の描画
-	enemy_->Draw();
+	for (Enemy* enemy : enemies_) {
+		// 敵の描画
+		enemy->Draw();
+	}
 
 	Model::PostDraw();
 
@@ -186,4 +203,29 @@ void GameScene::GenerateBlocks() {
 			}
 		}
 	}
+}
+
+void GameScene::CheckAllCollisions() {
+#pragma region playerAndEnemy
+	// 判定対象1と2の座標
+	AABB aabb1, aabb2;
+
+	// 自キャラの座標
+	aabb1 = player_->GetAABB();
+
+	// 自キャラと敵弾全ての当たり判定
+	for (Enemy* enemy : enemies_) {
+		// 敵弾の座標
+		aabb2 = enemy->GetAABB();
+
+		// AABB同士の交差判定
+		if (aabb->IsCollision(aabb1, aabb2)) {
+			// 自キャラの衝突時関数を呼び出す
+			player_->OnCollision(enemy);
+			// 敵の衝突時関数を呼び出す
+			enemy->OnCollision(player_);
+		}
+	}
+
+#pragma endregion
 }

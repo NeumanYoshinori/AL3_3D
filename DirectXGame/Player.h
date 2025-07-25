@@ -1,9 +1,12 @@
 #pragma once
 #include "KamataEngine.h"
+#include "AABB.h"
 
 using namespace KamataEngine;
 
 class MapChipField;
+
+class Enemy;
 
 // 自キャラ
 class Player {
@@ -70,7 +73,17 @@ public:
 	// 接地している場合の処理
 	void ChangeLanding(const CollisionMapInfo& info);
 
+	// 壁に接触している場合の処理
 	void WallHit(const CollisionMapInfo& info);
+
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
+
+	// AABBを取得
+	AABB GetAABB();
+
+	// 衝突応答
+	void OnCollision(const Enemy* enemy);
 
 private:
 	// ワールド変換データ
