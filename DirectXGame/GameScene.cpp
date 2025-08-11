@@ -6,7 +6,7 @@
 using namespace KamataEngine;
 
 Math* matrixBlock = new Math;
-worldTransform* worldTransformUpdateBlock_ = new worldTransform;
+WorldUpdate* worldTransformUpdateBlock_ = new WorldUpdate;
 Aabb* aabb = new Aabb;
 
 GameScene::~GameScene() {
@@ -37,6 +37,10 @@ GameScene::~GameScene() {
 	// 敵の解放
 	for (Enemy* enemy : enemies_) {
 		delete enemy;
+	}
+
+	if (deathParticles_) {
+		delete deathParticles_;
 	}
 }
 
@@ -79,7 +83,6 @@ void GameScene::Initialize() {
 	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
 	cameraController_->SetMovableArea(cameraArea);
 
-	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
 	// 3Dモデルデータの生成
 	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
 	for (uint32_t i = 0; i < 3; ++i) {
@@ -91,6 +94,11 @@ void GameScene::Initialize() {
 
 		enemies_.push_back(newEnemy_);
 	}
+
+	// 仮の生成処理
+	modelDeathParticle_ = Model::CreateFromOBJ("deathParticle", true);
+	deathParticles_ = new DeathParticles;
+	deathParticles_->Initialize(modelDeathParticle_, &camera_, playerPosition);
 }
 
 void GameScene::Update() {
@@ -135,6 +143,10 @@ void GameScene::Update() {
 
 	debugCamera_->Update();
 
+	if (deathParticles_) {
+		deathParticles_->Update();
+	}
+
 	// 全ての当たり判定を行う
 	CheckAllCollisions();
 }
@@ -167,13 +179,17 @@ void GameScene::Draw() {
 		enemy->Draw();
 	}
 
+	if (deathParticles_) {
+		deathParticles_->Draw();
+	}
+
 	Model::PostDraw();
 
 	// スプライト描画前処理
-	Sprite::PreDraw(dxCommon->GetCommandList());
+	//Sprite::PreDraw(dxCommon->GetCommandList());
 
 	// スプライト後処理
-	Sprite::PostDraw();
+	//Sprite::PostDraw();
 }
 
 void GameScene::GenerateBlocks() {

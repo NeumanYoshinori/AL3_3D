@@ -8,7 +8,7 @@
 #include <algorithm>
 #include "MapChipField.h"
 
-worldTransform* worldTransformUpdate_ = new worldTransform;
+WorldUpdate* worldTransformUpdatePlayer_ = new WorldUpdate;
 Math* matrix2 = new Math;
 
 void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
@@ -59,7 +59,7 @@ void Player::Update() {
 		worldTransform_.rotation_.y = matrix2->EaseInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTurn);
 	}
 
-	worldTransformUpdate_->WorldTransformUpdate(worldTransform_);
+	worldTransformUpdatePlayer_->WorldTransformUpdate(worldTransform_);
 }
 
 void Player::Input() {

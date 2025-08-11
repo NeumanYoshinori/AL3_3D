@@ -4,7 +4,7 @@
 #include <cassert>
 #include <numbers>
 
-worldTransform* worldTransformUpdateE_ = new worldTransform;
+WorldUpdate* worldTransformUpdateEnemy_ = new WorldUpdate;
 Math* matrix3 = new Math;
 
 void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
@@ -32,12 +32,12 @@ void Enemy::Update() {
 
 	// 回転アニメーション
 	float param = std::sin(2 * std::numbers::pi_v<float> * walkTimer_ / kWalkMotionTime);
-	float degree = kWalkMotionAngleStart + kWalkMotionAngleEnd * (param + 1.0f) / 2.0f;
+	//float degree = kWalkMotionAngleStart + kWalkMotionAngleEnd * (param + 1.0f) / 2.0f;
 
-	worldTransform_.rotation_.x = matrix3->ToRadians(degree);
+	worldTransform_.rotation_.x = param;
 
 	// ワールド行列の更新
-	worldTransformUpdateE_->WorldTransformUpdate(worldTransform_);
+	worldTransformUpdateEnemy_->WorldTransformUpdate(worldTransform_);
 }
 
 Vector3 Enemy::GetWorldPosition() {

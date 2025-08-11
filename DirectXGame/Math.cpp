@@ -161,6 +161,21 @@ float Math::Dot(const Vector3& v1, const Vector3& v2) { return v1.x * v2.x + v1.
 // 度をラジアンに変換
 float Math::ToRadians(float degree) { return degree * std::numbers::pi_v<float> / 180.0f; }
 
+// 座標変換
+Vector3 Math::Transform(const Vector3& vector, const Matrix4x4& matrix4x4) {
+	Vector3 result = {};
+	result.x = vector.x * matrix4x4.m[0][0] + vector.y * matrix4x4.m[1][0] + vector.z * matrix4x4.m[2][0] + 1.0f * matrix4x4.m[3][0];
+	result.y = vector.x * matrix4x4.m[0][1] + vector.y * matrix4x4.m[1][1] + vector.z * matrix4x4.m[2][1] + 1.0f * matrix4x4.m[3][1];
+	result.z = vector.x * matrix4x4.m[0][2] + vector.y * matrix4x4.m[1][2] + vector.z * matrix4x4.m[2][2] + 1.0f * matrix4x4.m[3][2];
+	float w = vector.x * matrix4x4.m[0][3] + vector.y * matrix4x4.m[1][3] + vector.z * matrix4x4.m[2][3] + 1.0f * matrix4x4.m[3][3];
+	assert(w != 0.0f);
+	result.x /= w;
+	result.y /= w;
+	result.z /= w;
+
+	return result;
+}
+
 const Vector3 operator+(const Vector3& v1, const Vector3& v2) {
 	Vector3 temp(v1);
 	return temp += v2;

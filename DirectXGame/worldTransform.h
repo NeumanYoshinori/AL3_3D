@@ -3,7 +3,7 @@
 
 using namespace KamataEngine;
 
-class worldTransform {
+class WorldUpdate {
 public:
 	void WorldTransformUpdate(WorldTransform& worldTransform);
 };

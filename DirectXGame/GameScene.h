@@ -6,6 +6,7 @@
 #include "MapChipField.h"
 #include "CameraController.h"
 #include "Enemy.h"
+#include "DeathParticles.h"
 
 class GameScene {
 public:
@@ -66,4 +67,7 @@ private:
 	// 敵
 	std::list<Enemy*> enemies_;
 	Model* modelEnemy_ = nullptr;
+
+	DeathParticles* deathParticles_ = nullptr;
+	Model* modelDeathParticle_ = nullptr;
 };

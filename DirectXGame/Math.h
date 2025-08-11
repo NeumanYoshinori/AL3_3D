@@ -41,6 +41,8 @@ public:
 	float Dot(const Vector3& v1, const Vector3& v2);
 	// 度をラジアンに変換する
 	float ToRadians(float degree);
+	// 座標変換
+	Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix4x4);
 
 private:
 };
