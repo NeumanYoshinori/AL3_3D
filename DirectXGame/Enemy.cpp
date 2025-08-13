@@ -4,9 +4,6 @@
 #include <cassert>
 #include <numbers>
 
-WorldUpdate* worldTransformUpdateEnemy_ = new WorldUpdate;
-Math* matrix3 = new Math;
-
 void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	// NULLポインタチェック
 	assert(model);
@@ -37,7 +34,7 @@ void Enemy::Update() {
 	worldTransform_.rotation_.x = param;
 
 	// ワールド行列の更新
-	worldTransformUpdateEnemy_->WorldTransformUpdate(worldTransform_);
+	worldTransformUpdate_->WorldTransformUpdate(worldTransform_);
 }
 
 Vector3 Enemy::GetWorldPosition() {

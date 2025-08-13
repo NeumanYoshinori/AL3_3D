@@ -7,6 +7,8 @@ using namespace KamataEngine;
 
 class Player;
 
+class WorldUpdate;
+
 class Enemy {
 public:
 	// 初期化
@@ -36,6 +38,8 @@ private:
 
 	// カメラ
 	Camera* camera_ = nullptr;
+
+	WorldUpdate* worldTransformUpdate_ = nullptr;
 
 	// 歩行の速さ
 	static inline const float kWalkSpeed = 0.02f;

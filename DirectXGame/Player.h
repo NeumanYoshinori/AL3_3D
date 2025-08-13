@@ -8,6 +8,10 @@ class MapChipField;
 
 class Enemy;
 
+class WorldUpdate;
+
+class Math;
+
 // 自キャラ
 class Player {
 public:
@@ -21,7 +25,7 @@ public:
 		bool hitCeiling = false;
 		bool hitGround = false;
 		bool hitWall = false;
-		Vector3 moveAmount_;
+		Vector3 move;
 	};
 
 	enum Corner {
@@ -83,7 +87,10 @@ public:
 	AABB GetAABB();
 
 	// 衝突応答
-	void OnCollision(const Enemy* enemy);
+	void OnCollision();
+
+	// デスフラグのgetter
+	bool IsDead() const { return isDead_; }
 
 private:
 	// ワールド変換データ
@@ -100,6 +107,9 @@ private:
 
 	// マップチップによるフィールド
 	MapChipField* mapChipField_ = nullptr;
+
+	WorldUpdate* worldTransformUpdate_ = nullptr;
+	Math* matrix_ = nullptr;
 
 	// 移動量
 	Vector3 velocity_ = {};
@@ -138,8 +148,11 @@ private:
 	static inline const float kAttenuationLanding = 0.0f;
 
 	// 微小な数値
-	float smallNum = 0.06f;
+	static inline const float smallNum = 0.06f;
 
 	// 着地時の速度減衰率
 	static inline const float kAttenuationWall = 0.2f;
+
+	// デスフラグ
+	bool isDead_ = false;
 };

@@ -8,8 +8,18 @@
 #include "Enemy.h"
 #include "DeathParticles.h"
 
+class WorldUpdate;
+
+class Aabb;
+
 class GameScene {
 public:
+	// ゲームのフェーズ（型）
+	enum class Phase {
+		kPlay, // ゲームプレイ
+		kDeath, // デス演出
+	};
+
 	~GameScene();
 
 	// 初期化
@@ -27,15 +37,22 @@ public:
 	// 全ての当たり判定を行う
 	void CheckAllCollisions();
 
+	// フェーズの切り替え
+	void ChangePhase();
+
+	// カメラの更新
+	void UpdateCamera();
+
+	// ブロックの更新
+	void UpdateBlocks();
+
 private:
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
-	// スプライト
-	// Sprite* sprite_ = nullptr;
-	// 3Dモデルデータの生成
-	//Model* model_ = nullptr;
+
 	// ワールド変換データ
 	WorldTransform worldTransform_;
+
 	// カメラ
 	Camera camera_;
 
@@ -47,6 +64,8 @@ private:
 	// 3Dモデルデータ
 	Model* modelBlock_ = nullptr;
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+
+	WorldUpdate* worldTransformUpdate_ = nullptr;
 
 	// デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
@@ -68,6 +87,11 @@ private:
 	std::list<Enemy*> enemies_;
 	Model* modelEnemy_ = nullptr;
 
+	Aabb* aabb = nullptr;
+
 	DeathParticles* deathParticles_ = nullptr;
 	Model* modelDeathParticle_ = nullptr;
+
+	// ゲームの現在のフェーズ（変数）
+	Phase phase_;
 };

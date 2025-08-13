@@ -5,6 +5,10 @@
 
 using namespace KamataEngine;
 
+class WorldUpdate;
+
+class Math;
+
 /// <summary>
 /// デス演出用パーティクル
 /// </summary>
@@ -25,6 +29,10 @@ private:
 
 	// カメラ
 	Camera* camera_ = nullptr;
+
+	WorldUpdate* worldTransformUpdate_ = nullptr;
+
+	Math* matrix_ = nullptr;
 
 	// パーティクルの個数
 	static inline const uint32_t kNumParticles = 8;

@@ -3,9 +3,6 @@
 #include "Math.h"
 #include <algorithm>
 
-WorldUpdate* worldTransformUpdateParticle = new WorldUpdate;
-Math* matrix4 = new Math;
-
 void DeathParticles::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	// NULLチェック
 	assert(model);
@@ -36,9 +33,9 @@ void DeathParticles::Update() {
 		// 回転角を計算する
 		float angle = kAngleUnit * i;
 		// Z軸回り回転行列
-		Matrix4x4 matrixRotation = matrix4->MakeRotateZMatrix(angle);
+		Matrix4x4 matrixRotation = matrix_->MakeRotateZMatrix(angle);
 		// 基本ベクトルを回転させて速度ベクトルを得る
-		velocity = matrix4->Transform(velocity, matrixRotation);
+		velocity = matrix_->Transform(velocity, matrixRotation);
 		// 移動処理
 		worldTransforms_[i].translation_ += velocity;
 	}
@@ -59,7 +56,7 @@ void DeathParticles::Update() {
 
 	// ワールド変換の更新
 	for (auto& worldTransform : worldTransforms_) {
-		worldTransformUpdateParticle->WorldTransformUpdate(worldTransform);
+		worldTransformUpdate_->WorldTransformUpdate(worldTransform);
 	}
 }
 
