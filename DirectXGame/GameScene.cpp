@@ -39,9 +39,11 @@ GameScene::~GameScene() {
 		delete enemy;
 	}
 
+	// デスパーティクルの解放
 	if (deathParticles_) {
 		delete deathParticles_;
 	}
+	delete modelDeathParticle_;
 }
 
 void GameScene::Initialize() {
@@ -89,7 +91,7 @@ void GameScene::Initialize() {
 		// 敵の生成
 		Enemy* newEnemy_ = new Enemy();
 		// 座標をマップチップ番号で指定
-		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14 + i * 2, 14 + i * 2);
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14 + i * 2, 18);
 		newEnemy_->Initialize(modelEnemy_, &camera_, enemyPosition);
 
 		enemies_.push_back(newEnemy_);
