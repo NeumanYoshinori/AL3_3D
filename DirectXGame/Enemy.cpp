@@ -29,7 +29,6 @@ void Enemy::Update() {
 
 	// 回転アニメーション
 	float param = std::sin(2 * std::numbers::pi_v<float> * walkTimer_ / kWalkMotionTime);
-	//float degree = kWalkMotionAngleStart + kWalkMotionAngleEnd * (param + 1.0f) / 2.0f;
 
 	worldTransform_.rotation_.x = param;
 

@@ -15,13 +15,15 @@ class Math;
 class DeathParticles {
 public:
 	// 初期化
-	void Initialize(Model* model, Camera * camera, const Vector3& position);
+	void Initialize(Model* model, Camera* camera, const Vector3& position);
 
 	// 更新
 	void Update();
 
 	// 描画
 	void Draw();
+
+	bool IsFinished() const { return isFinished_; }
 
 private:
 	// モデル

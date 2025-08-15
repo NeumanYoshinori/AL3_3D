@@ -46,10 +46,9 @@ public:
 	// ブロックの更新
 	void UpdateBlocks();
 
-private:
-	// テクスチャハンドル
-	uint32_t textureHandle_ = 0;
+	bool IsFinished() const { return finished_; }
 
+private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
 
@@ -85,13 +84,20 @@ private:
 
 	// 敵
 	std::list<Enemy*> enemies_;
+	// 敵モデル
 	Model* modelEnemy_ = nullptr;
 
+	// AABB
 	Aabb* aabb = nullptr;
 
+	// デスパーティクル
 	DeathParticles* deathParticles_ = nullptr;
+	// デスパーティクルモデル
 	Model* modelDeathParticle_ = nullptr;
 
-	// ゲームの現在のフェーズ（変数）
+	// ゲームの現在のフェーズ
 	Phase phase_;
+
+	// 終了フラグ
+	bool finished_ = false;
 };
