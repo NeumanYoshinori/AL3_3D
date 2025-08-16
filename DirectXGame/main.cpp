@@ -31,7 +31,7 @@ void ChangeScene() {
 			gameScene = new GameScene;
 			gameScene->Initialize();
 		}
-	break;
+		break;
 	case Scene::kGame:
 		if (gameScene->IsFinished()) {
 			// シーン変更
@@ -43,7 +43,7 @@ void ChangeScene() {
 			titleScene = new TitleScene;
 			titleScene->Initialize();
 		}
-	break;
+		break;
 	}
 }
 

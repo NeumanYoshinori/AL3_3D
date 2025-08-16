@@ -18,6 +18,7 @@ GameScene::~GameScene() {
 	}
 	worldTransformBlocks_.clear();
 
+	// デバッグカメラの解放
 	delete debugCamera_;
 
 	// 天球の解放
@@ -40,6 +41,9 @@ GameScene::~GameScene() {
 		delete deathParticles_;
 	}
 	delete modelDeathParticle_;
+
+	// フェードの解放
+	delete fade_;
 }
 
 void GameScene::Initialize() {
@@ -78,6 +82,7 @@ void GameScene::Initialize() {
 	cameraController_->SetTarget(player_); // 追従対象セット
 	cameraController_->Reset(); // リセット
 
+	// 移動可能エリア
 	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
 	cameraController_->SetMovableArea(cameraArea);
 
@@ -94,21 +99,56 @@ void GameScene::Initialize() {
 	}
 
 	// ゲームプレイフェーズから開始
-	phase_ = Phase::kPlay;
+	phase_ = Phase::kFadeIn;
+
+	// フェードの初期化
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 1.0f);
 }
 
 void GameScene::Update() {
+	// フェーズの変更
 	ChangePhase();
 
 	switch (phase_) {
+	case Phase::kFadeIn:
+		// フェードの更新
+		fade_->Update();
+
+		// フェードが終わったら次のフェーズに
+		if (fade_->IsFinished()) {
+			fade_->Start(Fade::Status::FadeOut, 1.0f);
+			phase_ = Phase::kPlay;
+		}
+
+		// 天球の更新
+		skydome_->Update();
+
+		// 自キャラの更新
+		player_->Update();
+
+		// 敵の更新
+		for (Enemy* enemy : enemies_) {
+			enemy->Update();
+		}
+
+		// カメラコントローラの更新
+		cameraController_->Update();
+
+		// カメラの更新
+		UpdateCamera();
+
+		// ブロックの更新
+		UpdateBlocks();
+
+		break;
 	case Phase::kPlay:
 		// 天球の更新
 		skydome_->Update();
 
 		// 自キャラの更新
 		player_->Update();
-		// 自キャラの入力処理
-		player_->Input();
 
 		// 敵の更新
 		for (Enemy* enemy : enemies_) {
@@ -137,12 +177,38 @@ void GameScene::Update() {
 			enemy->Update();
 		}
 
+		// デスパーティクルの更新
 		if (deathParticles_) {
 			deathParticles_->Update();
 		}
 
+		// フェードが終わったら次のフェーズに
 		if (deathParticles_ && deathParticles_->IsFinished()) {
+			fade_->Fade::Start(Fade::Status::FadeOut, 1.0f);
+			phase_ = Phase::kFadeOut;
+		}
+
+		// カメラの更新
+		UpdateCamera();
+
+		// ブロックの更新
+		UpdateBlocks();
+
+		break;
+	case Phase::kFadeOut:
+		// フェードの更新
+		fade_->Update();
+
+		if (fade_->IsFinished()) {
 			finished_ = true;
+		}
+
+		// 天球の更新
+		skydome_->Update();
+
+		// 敵の更新
+		for (Enemy* enemy : enemies_) {
+			enemy->Update();
 		}
 
 		// カメラの更新
@@ -191,6 +257,9 @@ void GameScene::Draw() {
 	}
 
 	Model::PostDraw();
+
+	// フェードの描画
+	fade_->Draw();
 }
 
 void GameScene::GenerateBlocks() {
@@ -248,6 +317,7 @@ void GameScene::CheckAllCollisions() {
 }
 
 void GameScene::ChangePhase() {
+	// フェーズの変更
 	switch (phase_) {
 	case Phase::kPlay:
 		if (player_->IsDead()) {

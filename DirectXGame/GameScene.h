@@ -7,6 +7,7 @@
 #include "CameraController.h"
 #include "Enemy.h"
 #include "DeathParticles.h"
+#include "Fade.h"
 
 class WorldUpdate;
 
@@ -16,8 +17,10 @@ class GameScene {
 public:
 	// ゲームのフェーズ（型）
 	enum class Phase {
+		kFadeIn, // フェードイン
 		kPlay, // ゲームプレイ
 		kDeath, // デス演出
+		kFadeOut, // フェードアウト
 	};
 
 	~GameScene();
@@ -100,4 +103,6 @@ private:
 
 	// 終了フラグ
 	bool finished_ = false;
+
+	Fade* fade_ = nullptr;
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include <KamataEngine.h>
+#include "Fade.h"
 
 using namespace KamataEngine;
 
@@ -10,6 +11,12 @@ class WorldUpdate;
 /// </summary>
 class TitleScene {
 public:
+	enum class Phase {
+		kFadeIn, // フェードアウト
+		kMain, // メイン部
+		kFadeOut, // フェードアウト
+	};
+
 	~TitleScene();
 
 	// 初期化
@@ -48,4 +55,9 @@ private:
 
 	// 終了フラグ
 	bool finished_ = false;
+
+	Fade* fade_ = nullptr;
+
+	// 現在のフェード
+	Phase phase_ = Phase::kFadeIn;
 };

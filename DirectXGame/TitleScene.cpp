@@ -6,6 +6,9 @@ TitleScene::~TitleScene() {
 	// 3Dモデルデータの解放
 	delete modelPlayer_;
 	delete modelTitle_;
+
+	// フェードの解放
+	delete fade_;
 }
 
 void TitleScene::Initialize() {
@@ -36,11 +39,38 @@ void TitleScene::Initialize() {
 
 	// カメラの初期化
 	camera_.Initialize();
+
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 1.0f);
 }
 
 void TitleScene::Update() {
-	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
-		finished_ = true;
+	switch (phase_) {
+	case Phase::kFadeIn:
+		// フェードの更新
+		fade_->Update();
+
+		//フェードが終わったら次のフェーズに
+		if (fade_->IsFinished()) {
+			phase_ = Phase::kMain;
+		}
+		break;
+	case Phase::kMain:
+		// スペースキーを押したら次のフェーズに
+		if (Input::GetInstance()->PushKey(DIK_SPACE)) {
+			fade_->Start(Fade::Status::FadeOut, 1.0f);
+			phase_ = Phase::kFadeOut;
+		}
+		break;
+	case Phase::kFadeOut:
+		// フェーズの更新
+		fade_->Update();
+
+		if (fade_->IsFinished()) {
+			finished_ = true;
+		}
+		break;
 	}
 
 	// カウンターを1フレーム分の秒数進める
@@ -72,5 +102,9 @@ void TitleScene::Draw() {
 	// 自キャラの描画
 	modelPlayer_->Draw(worldTransformPlayer_, camera_);
 
+	// 描画後処理
 	Model::PostDraw();
+
+	// フェードの描画
+	fade_->Draw();
 }
