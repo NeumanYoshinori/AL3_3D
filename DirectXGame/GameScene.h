@@ -17,9 +17,9 @@ class GameScene {
 public:
 	// ゲームのフェーズ（型）
 	enum class Phase {
-		kFadeIn, // フェードイン
-		kPlay, // ゲームプレイ
-		kDeath, // デス演出
+		kFadeIn,  // フェードイン
+		kPlay,    // ゲームプレイ
+		kDeath,   // デス演出
 		kFadeOut, // フェードアウト
 	};
 
@@ -66,6 +66,10 @@ private:
 	// 3Dモデルデータ
 	Model* modelBlock_ = nullptr;
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+	std::vector<std::vector<WorldTransform*>> worldTransformDashBlocksLeft_;
+	std::vector<std::vector<WorldTransform*>> worldTransformDashBlocksRight_;
+	Model* modelDashLeft_ = nullptr;
+	Model* modelDashRight_ = nullptr;
 
 	WorldUpdate* worldTransformUpdate_ = nullptr;
 

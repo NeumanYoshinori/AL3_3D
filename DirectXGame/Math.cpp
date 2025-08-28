@@ -1,5 +1,6 @@
 #include "Math.h"
 #include <numbers>
+#include <cassert>
 
 Matrix4x4 Math::MakeScaleMatrix(const Vector3& scale) {
 	// 拡大縮小行列

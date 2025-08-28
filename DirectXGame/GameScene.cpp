@@ -10,6 +10,8 @@ GameScene::~GameScene() {
 	delete modelPlayer_;
 	delete player_;
 	delete modelBlock_;
+	delete modelDashLeft_;
+	delete modelDashRight_;
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -17,6 +19,20 @@ GameScene::~GameScene() {
 		}
 	}
 	worldTransformBlocks_.clear();
+
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformDashBlocksLeft_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			delete worldTransformBlock;
+		}
+	}
+	worldTransformDashBlocksLeft_.clear();
+
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformDashBlocksRight_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			delete worldTransformBlock;
+		}
+	}
+	worldTransformDashBlocksRight_.clear();
 
 	// デバッグカメラの解放
 	delete debugCamera_;
@@ -56,7 +72,7 @@ void GameScene::Initialize() {
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 	// マップチップフィールドの初期化
-	GenerateBlocks();
+	GenerateBlocks();  
 
 	// 3Dモデルデータの生成
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
@@ -246,6 +262,26 @@ void GameScene::Draw() {
 		}
 	}
 
+	// ブロックの描画
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformDashBlocksLeft_) {
+		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock)
+				continue;
+
+			modelDashLeft_->Draw(*worldTransformBlock, camera_);
+		}
+	}
+
+	// ブロックの描画
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformDashBlocksRight_) {
+		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock)
+				continue;
+
+			modelDashRight_->Draw(*worldTransformBlock, camera_);
+		}
+	}
+
 	for (Enemy* enemy : enemies_) {
 		// 敵の描画
 		enemy->Draw();
@@ -265,6 +301,8 @@ void GameScene::Draw() {
 void GameScene::GenerateBlocks() {
 	// 3Dモデルデータの生成
 	modelBlock_ = Model::CreateFromOBJ("block", true);
+	modelDashLeft_ = Model::CreateFromOBJ("DashBlockLeft", true);
+	modelDashRight_ = Model::CreateFromOBJ("DashBlockRight", true);
 
 	// 要素数
 	const uint32_t kNumBlockVirtical = mapChipField_->GetNumBlockVirtical();
@@ -278,6 +316,18 @@ void GameScene::GenerateBlocks() {
 		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
 	}
 
+	worldTransformDashBlocksLeft_.resize(kNumBlockHorizontal);
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		// 1列の要素数を設定（横方向のブロック数）
+		worldTransformDashBlocksLeft_[i].resize(kNumBlockHorizontal);
+	}
+
+	worldTransformDashBlocksRight_.resize(kNumBlockHorizontal);
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		// 1列の要素数を設定（横方向のブロック数）
+		worldTransformDashBlocksRight_[i].resize(kNumBlockHorizontal);
+	}
+
 	// ブロックの生成
 	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
 		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
@@ -286,6 +336,18 @@ void GameScene::GenerateBlocks() {
 				worldTransform->Initialize();
 				worldTransformBlocks_[i][j] = worldTransform;
 				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
+			}
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kDashBoardL) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformDashBlocksLeft_[i][j] = worldTransform;
+				worldTransformDashBlocksLeft_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
+			}
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kDashBoardR) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformDashBlocksRight_[i][j] = worldTransform;
+				worldTransformDashBlocksRight_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
 			}
 		}
 	}
@@ -361,6 +423,26 @@ void GameScene::UpdateCamera() {
 void GameScene::UpdateBlocks() {
 	// ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock)
+				continue;
+
+			worldTransformUpdate_->WorldTransformUpdate(*worldTransformBlock);
+		}
+	}
+
+	// ブロックの更新
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformDashBlocksLeft_) {
+		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock)
+				continue;
+
+			worldTransformUpdate_->WorldTransformUpdate(*worldTransformBlock);
+		}
+	}
+
+	// ブロックの更新
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformDashBlocksRight_) {
 		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
 				continue;

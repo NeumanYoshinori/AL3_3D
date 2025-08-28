@@ -7,6 +7,9 @@ using namespace KamataEngine;
 enum class MapChipType {
 	kBlank, // 空白
 	kBlock, // ブロック
+	kDashBoardL, // ダッシュ板左
+	kDashBoardR, // ダッシュ板右
+	kGoal, // ゴール
 };
 
 struct MapChipData {
@@ -30,10 +33,6 @@ public:
 		float top; // 上端
 	};
 
-	// 1ブロックのサイズ
-	static inline const float kBlockWidth = 1.0f;
-	static inline const float kBlockHeight = 1.0f;
-
 	void ResetMapChipData();
 
 	void LoadMapChipCsv(const std::string& filePath);
@@ -49,6 +48,9 @@ public:
 	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
 
 private:
+	// 1ブロックのサイズ
+	static inline const float kBlockWidth = 1.0f;
+	static inline const float kBlockHeight = 1.0f;
 	// ブロックの個数
 	static inline const uint32_t kNumBlockVirtical = 20;
 	static inline const uint32_t kNumBlockHorizontal = 100;

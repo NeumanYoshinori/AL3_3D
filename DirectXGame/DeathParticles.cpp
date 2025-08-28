@@ -2,6 +2,7 @@
 #include "worldTransform.h"
 #include "Math.h"
 #include <algorithm>
+#include <cassert>
 
 void DeathParticles::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	// NULLチェック

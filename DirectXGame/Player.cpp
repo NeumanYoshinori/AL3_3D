@@ -45,6 +45,9 @@ void Player::Update() {
 
 	ChangeLanding(collisionMapInfo);
 
+	DashLeft();
+	DashRight();
+
 	// 旋回制御
 	if (turnTimer_ > 0.0f) {
 		// タイマーを進める
@@ -63,53 +66,53 @@ void Player::Input() {
 	// 移動入力
 	// 接地状態
 	if (onGround_) {
-		if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
-			// 左右加速
-			Vector3 acceleration{};
-			if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
-				if (velocity_.x < 0.0f) {
-					// 速度と逆方向に入力中は急ブレーキ
-					velocity_.x *= (1.0f - kAttenuation);
+		if (!hitDashLeft || !hitDashRight) {
+			if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
+				// 左右加速
+				Vector3 acceleration{};
+				if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
+					if (velocity_.x < 0.0f) {
+						// 速度と逆方向に入力中は急ブレーキ
+						velocity_.x *= (1.0f - kAttenuation);
+					}
+
+					acceleration.x += kAcceleration / 60.0f;
+
+					if (lrDirection_ != LRDirection::kRight) {
+						lrDirection_ = LRDirection::kRight;
+						turnFirstRotationY_ = worldTransform_.rotation_.y;
+						turnTimer_ = kTimeTurn;
+					}
+				} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
+					// 右移動中の左入力
+					if (velocity_.x > 0.0f) {
+						// 速度と逆方向に入力中は急ブレーキ
+						velocity_.x *= (1.0f - kAttenuation);
+					}
+
+					acceleration.x -= kAcceleration / 60.0f;
+
+					if (lrDirection_ != LRDirection::kLeft) {
+						lrDirection_ = LRDirection::kLeft;
+						turnFirstRotationY_ = worldTransform_.rotation_.y;
+						turnTimer_ = kTimeTurn;
+					}
 				}
 
-				acceleration.x += kAcceleration / 60.0f;
+				// 加速／減速
+				velocity_ += acceleration;
+				// 最大速度制限
+				velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
 
-				if (lrDirection_ != LRDirection::kRight) {
-					lrDirection_ = LRDirection::kRight;
-					turnFirstRotationY_ = worldTransform_.rotation_.y;
-					turnTimer_ = kTimeTurn;
-				}
-			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
-				// 右移動中の左入力
-				if (velocity_.x > 0.0f) {
-					// 速度と逆方向に入力中は急ブレーキ
-					velocity_.x *= (1.0f - kAttenuation);
-				}
-
-				acceleration.x -= kAcceleration / 60.0f;
-
-				if (lrDirection_ != LRDirection::kLeft) {
-					lrDirection_ = LRDirection::kLeft;
-					turnFirstRotationY_ = worldTransform_.rotation_.y;
-					turnTimer_ = kTimeTurn;
-				}
+			} else {
+				velocity_.x *= (1.0f - kAttenuation);
 			}
-
-			// 加速／減速
-			velocity_ += acceleration;
-			// 最大速度制限
-			velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
-
-		}
-		else {
-			velocity_.x *= (1.0f - kAttenuation);
 		}
 
 		// ほぼ0の場合に0にする
 		if (std::abs(velocity_.x) <= 0.0001f) {
 			velocity_.x = 0.0f;
 		}
-
 		if (Input::GetInstance()->PushKey(DIK_UP)) {
 			// ジャンプ初速
 			velocity_.y = kJumpAcceleration / 60.0f;
@@ -195,6 +198,18 @@ void Player::IsHitTop(CollisionMapInfo& info) {
 			info.hitCeiling = true;
 		}
 	}
+
+	hitDashLeft = false;
+
+	if (mapChipType == MapChipType::kDashBoardL) {
+		hitDashLeft = true;
+	}
+
+	hitDashRight = false;
+
+	if (mapChipType == MapChipType::kDashBoardR) {
+		hitDashRight = true;
+	}
 }
 
 void Player::IsHitBottom(CollisionMapInfo& info) {
@@ -241,6 +256,18 @@ void Player::IsHitBottom(CollisionMapInfo& info) {
 			// 天井に当たったことを記録する
 			info.hitGround = true;
 		}
+	}
+
+	hitDashLeft = false;
+
+	if (mapChipType == MapChipType::kDashBoardL) {
+		hitDashLeft = true;
+	}
+
+	hitDashRight = false;
+
+	if (mapChipType == MapChipType::kDashBoardR) {
+		hitDashRight = true;
 	}
 }
 
@@ -290,6 +317,18 @@ void Player::IsHitRight(CollisionMapInfo& info) {
 			info.hitWall = true;
 		}
 	}
+
+	hitDashLeft = false;
+
+	if (mapChipType == MapChipType::kDashBoardL) {
+		hitDashLeft = true;
+	}
+
+	hitDashRight = false;
+
+	if (mapChipType == MapChipType::kDashBoardR) {
+		hitDashRight = true;
+	}
 }
 
 void Player::IsHitLeft(CollisionMapInfo& info) {
@@ -337,6 +376,18 @@ void Player::IsHitLeft(CollisionMapInfo& info) {
 			// 壁に当たったことを判定結果に記録する
 			info.hitWall = true;
 		}
+	}
+
+	hitDashLeft = false;
+
+	if (mapChipType == MapChipType::kDashBoardL) {
+		hitDashLeft = true;
+	}
+
+	hitDashRight = false;
+
+	if (mapChipType == MapChipType::kDashBoardR) {
+		hitDashRight = true;
 	}
 }
 
@@ -392,6 +443,26 @@ void Player::WallHit(const CollisionMapInfo& info) {
 	// 壁接触による減衰
 	if (info.hitWall) {
 		velocity_.x *= (1.0f - kAttenuationWall);
+	}
+}
+
+void Player::DashLeft() {
+	if (hitDashLeft) {
+		Vector3 acceleration{};
+		acceleration.x += kDashAcceleration / 60.0f;
+
+		velocity_ -= acceleration;
+		velocity_.x = std::clamp(velocity_.x, -kLimitDashSpeed, kLimitDashSpeed);
+	}
+}
+
+void Player::DashRight() {
+	if (hitDashRight) {
+		Vector3 acceleration{};
+		acceleration.x += kDashAcceleration / 60.0f;
+
+		velocity_ += acceleration;
+		velocity_.x = std::clamp(velocity_.x, -kLimitDashSpeed, kLimitDashSpeed);
 	}
 }
 

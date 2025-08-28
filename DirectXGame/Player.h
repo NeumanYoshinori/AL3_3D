@@ -80,6 +80,11 @@ public:
 	// 壁に接触している場合の処理
 	void WallHit(const CollisionMapInfo& info);
 
+	// 左方向にダッシュさせる
+	void DashLeft();
+	// 右方向にダッシュさせる
+	void DashRight();
+
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
 
@@ -155,4 +160,10 @@ private:
 
 	// デスフラグ
 	bool isDead_ = false;
+
+	bool hitDashLeft = false;
+	bool hitDashRight = false;
+
+	static inline const float kDashAcceleration = 0.2f;
+	static inline const float kLimitDashSpeed = 1.0f;
 };

@@ -2,12 +2,15 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <cassert>
 
 namespace {
 
 std::map<std::string, MapChipType> mapChipTable = {
     {"0", MapChipType::kBlank},
     {"1", MapChipType::kBlock},
+    {"2", MapChipType::kDashBoardL},
+    {"3", MapChipType::kDashBoardR},
 };
 
 }
