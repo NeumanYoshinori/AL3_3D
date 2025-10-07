@@ -1,15 +1,15 @@
 #pragma once
 #include "KamataEngine.h"
 #include "AABB.h"
+#include <numbers>
 
 using namespace KamataEngine;
+using namespace std;
+using namespace numbers;
 
 class MapChipField;
-
 class Enemy;
-
 class WorldUpdate;
-
 class Math;
 
 // 自キャラ
@@ -37,11 +37,29 @@ public:
 		kNumCorner // 要素数
 	};
 
+	enum class Behavior {
+		kUnknown, // なし
+		kRoot, // 通常状態
+		kAttack // 攻撃中
+	};
+
+	enum class AttackPhase {
+		kCharge, // 溜め
+		kDash, // 突進
+		kRecovery, // 余韻
+	};
+
 	// 初期化
-	void Initialize(Model* model, Camera* camera, const Vector3& position);
+	void Initialize(Model* model, Model* modelAttack, Camera* camera, const Vector3& position);
 
 	// 更新
 	void Update();
+
+	// 通常行動更新
+	void BehaviorRootUpdate();
+
+	// 攻撃行動更新
+	void BehaviorAttackUpdate();
 
 	// 移動入力
 	void Input();
@@ -49,7 +67,7 @@ public:
 	// マップ衝突判定
 	void MapCollision(CollisionMapInfo& info);
 
-	std::array<Vector3, kNumCorner>PositionsNew(std::array<Vector3, kNumCorner>, const CollisionMapInfo& info);
+	array<Vector3, kNumCorner>PositionsNew(array<Vector3, kNumCorner>, const CollisionMapInfo& info);
 
 	// 上方向
 	void IsHitTop(CollisionMapInfo& info);
@@ -74,11 +92,17 @@ public:
 	// マップチップフィールドのsetter
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
+	// 天井に接触している場合の処理
+	void CeilingHit(const CollisionMapInfo& info);
+
 	// 接地している場合の処理
 	void ChangeLanding(const CollisionMapInfo& info);
 
 	// 壁に接触している場合の処理
 	void WallHit(const CollisionMapInfo& info);
+
+	// 旋回制御
+	void Turn();
 
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
@@ -92,6 +116,11 @@ public:
 	// デスフラグのgetter
 	bool IsDead() const { return isDead_; }
 
+	// 通常行動初期化
+	void BehaviorRootInitialize();
+	// 攻撃行動初期化
+	void BehaviorAttackInitialize();
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -99,8 +128,9 @@ private:
 	// モデル
 	Model* model_ = nullptr;
 
-	// テクスチャハンドル
-	uint32_t textureHandle_ = 0u;
+	// 攻撃モデル
+	Model* modelAttack_ = nullptr;
+	WorldTransform worldTransformAttack_;
 
 	// カメラ
 	Camera* camera_ = nullptr;
@@ -150,9 +180,26 @@ private:
 	// 微小な数値
 	static inline const float smallNum = 0.06f;
 
-	// 着地時の速度減衰率
+	// 壁に接触時の速度減衰率
 	static inline const float kAttenuationWall = 0.2f;
 
 	// デスフラグ
 	bool isDead_ = false;
+
+	// 振る舞い
+	Behavior behavior_ = Behavior::kRoot;
+	Behavior behaviorRequest_ = Behavior::kUnknown;
+
+	// 攻撃ギミックの経過時間カウンター
+	uint32_t attackParameter_ = 0;
+
+	// 溜め動作時間
+	static inline const uint32_t chargeTime = 8;
+	// 攻撃時間
+	static inline const uint32_t attackTime = 5;
+	// 余韻時間
+	static inline const uint32_t recoveryTime = 12;
+
+	// 現在の攻撃フェーズ
+	AttackPhase attackPhase_;
 };

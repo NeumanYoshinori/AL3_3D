@@ -17,9 +17,9 @@ class GameScene {
 public:
 	// ゲームのフェーズ（型）
 	enum class Phase {
-		kFadeIn, // フェードイン
-		kPlay, // ゲームプレイ
-		kDeath, // デス演出
+		kFadeIn,  // フェードイン
+		kPlay,    // ゲームプレイ
+		kDeath,   // デス演出
 		kFadeOut, // フェードアウト
 	};
 
@@ -63,9 +63,12 @@ private:
 	// プレイヤーモデル
 	Model* modelPlayer_ = nullptr;
 
+	// 攻撃モデル
+	Model* modelAttack_ = nullptr;
+
 	// 3Dモデルデータ
 	Model* modelBlock_ = nullptr;
-	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+	vector<vector<WorldTransform*>> worldTransformBlocks_;
 
 	WorldUpdate* worldTransformUpdate_ = nullptr;
 
@@ -86,7 +89,7 @@ private:
 	CameraController* cameraController_ = nullptr;
 
 	// 敵
-	std::list<Enemy*> enemies_;
+	list<Enemy*> enemies_;
 	// 敵モデル
 	Model* modelEnemy_ = nullptr;
 

@@ -4,6 +4,8 @@
 #include "Aabb.h"
 
 using namespace KamataEngine;
+using namespace std;
+using namespace numbers;
 
 class Player;
 

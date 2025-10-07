@@ -3,15 +3,14 @@
 #include "worldTransform.h"
 #include "AABB.h"
 
-using namespace KamataEngine;
-
 GameScene::~GameScene() {
 	// 3Dモデルデータの解放
 	delete modelPlayer_;
 	delete player_;
 	delete modelBlock_;
+	delete modelAttack_;
 
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+	for (vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
 		}
@@ -60,12 +59,13 @@ void GameScene::Initialize() {
 
 	// 3Dモデルデータの生成
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	modelAttack_ = Model::CreateFromOBJ("attack_effect", true);
 	// 自キャラの生成
 	player_ = new Player();
 	// 座標をマップチップ番号で指定
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(5, 16);
 	// 自キャラの初期化
-	player_->Initialize(modelPlayer_, &camera_, playerPosition);
+	player_->Initialize(modelPlayer_, modelAttack_, &camera_, playerPosition);
 	player_->SetMapChipField(mapChipField_);
 
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
@@ -340,12 +340,6 @@ void GameScene::ChangePhase() {
 
 void GameScene::UpdateCamera() {
 	// カメラの更新
-#ifdef _DEBUG
-	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
-		isDebugCameraActive_ = !isDebugCameraActive_;
-	}
-#endif
-
 	if (isDebugCameraActive_) {
 		debugCamera_->Update();
 		camera_.matView = debugCamera_->GetCamera().matView;
@@ -360,7 +354,7 @@ void GameScene::UpdateCamera() {
 
 void GameScene::UpdateBlocks() {
 	// ブロックの更新
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+	for (vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
 				continue;
