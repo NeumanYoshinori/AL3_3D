@@ -41,6 +41,9 @@ public:
 	// デスフラグのgetter
 	bool IsDead() const { return isDead_; }
 
+	// コリジョンが無効か
+	bool IsCollisionDisabled() const { return isCollisionDisabled_; }
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -94,4 +97,7 @@ private:
 
 	// 死亡時間
 	static inline const float kDeathTime = 0.6f;
+
+	// コリジョン無効フラグ
+	bool isCollisionDisabled_ = false;
 };

@@ -310,7 +310,10 @@ void GameScene::CheckAllCollisions() {
 
 	// 自キャラと敵全ての当たり判定
 	for (Enemy* enemy : enemies_) {
-		// 敵弾の座標
+		if (enemy->IsCollisionDisabled())
+			continue;
+		
+		// 敵の座標
 		aabb2 = enemy->GetAABB();
 
 		// AABB同士の交差判定

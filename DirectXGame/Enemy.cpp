@@ -106,6 +106,7 @@ void Enemy::OnCollision(const Player* player) {
 	if (player->IsAttack()) {
 		// 敵の振るまいをデス演出に変更
 		behaviorRequest_ = Behavior::kDeath;
+		isCollisionDisabled_ = true;
 	}
 }
 
