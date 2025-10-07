@@ -92,7 +92,7 @@ void GameScene::Initialize() {
 		// 敵の生成
 		Enemy* newEnemy_ = new Enemy();
 		// 座標をマップチップ番号で指定
-		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14 + i * 2, 18);
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14 + i * 4, 18);
 		newEnemy_->Initialize(modelEnemy_, &camera_, enemyPosition);
 
 		enemies_.push_back(newEnemy_);
@@ -318,7 +318,7 @@ void GameScene::CheckAllCollisions() {
 			// 自キャラの衝突時関数を呼び出す
 			player_->OnCollision();
 			// 敵の衝突時関数を呼び出す
-			enemy->OnCollision();
+			enemy->OnCollision(player_);
 		}
 	}
 

@@ -3,6 +3,7 @@
 #include "worldTransform.h"
 #include <cassert>
 #include <numbers>
+#include "Player.h"
 
 void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	// NULLポインタチェック
@@ -21,16 +22,55 @@ void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 }
 
 void Enemy::Update() {
-	// 移動
-	worldTransform_.translation_ += velocity_;
+	if (behaviorRequest_ != Behavior::kUnknown) {
+		// 振る舞いを変更する
+		behavior_ = behaviorRequest_;
 
-	// タイマーを加算
-	walkTimer_ += 1.0f / 60.0f;
+		switch (behavior_) {
+		case Behavior::kDeath:
+			counter_ = 0;
 
-	// 回転アニメーション
-	float param = sin(2 * pi_v<float> * walkTimer_ / kWalkMotionTime);
+			break;
+		}
 
-	worldTransform_.rotation_.x = param;
+		// 振る舞いリクエストをリセット
+		behaviorRequest_ = Behavior::kUnknown;
+	}
+
+	switch (behavior_) {
+		// 歩行
+	case Behavior::kWalk:
+		// 移動
+		worldTransform_.translation_ += velocity_;
+
+		// タイマーを加算
+		walkTimer_ += 1.0f / 60.0f;
+
+		// 回転アニメーション
+		worldTransform_.rotation_.x = sin(2 * pi_v<float> * walkTimer_ / kWalkMotionTime);
+
+		// ワールドトランスフォームの行列更新
+		worldTransformUpdate_->WorldTransformUpdate(worldTransform_);
+
+		break;
+		// デス演出
+	case Behavior::kDeath:
+		// タイマーを加算
+		counter_ += 1.0f / 60.0f;
+
+		// Y軸回りの回転角をイージングで変化させる
+		worldTransform_.rotation_.y += 0.3f;
+		worldTransform_.rotation_.x = matrix_->EaseOut(matrix_->ToRadians(deathAngleStart), matrix_->ToRadians(deathAngleEnd), counter_ / kDeathTime);
+
+		// ワールドトランスフォームの行列更新
+		worldTransformUpdate_->WorldTransformUpdate(worldTransform_);
+
+		if (counter_ >= kDeathTime) {
+			isDead_ = true;
+		}
+
+		break;
+	}
 
 	// ワールド行列の更新
 	worldTransformUpdate_->WorldTransformUpdate(worldTransform_);
@@ -40,9 +80,7 @@ Vector3 Enemy::GetWorldPosition() {
 	// ワールド座標を入れる変数
 	Vector3 worldPos{};
 	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y = worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
+	worldPos = worldTransform_.translation_;
 
 	return worldPos;
 }
@@ -58,8 +96,17 @@ AABB Enemy::GetAABB() {
 	return aabb;
 }
 
-void Enemy::OnCollision() {
-	isDead_ = true;
+void Enemy::OnCollision(const Player* player) {
+	if (behavior_ == Behavior::kDeath) {
+		// 敵がやられているなら何もしない
+		return;
+	}
+
+	// プレイヤーが攻撃中なら敵が死ぬ
+	if (player->IsAttack()) {
+		// 敵の振るまいをデス演出に変更
+		behaviorRequest_ = Behavior::kDeath;
+	}
 }
 
 void Enemy::Draw() {

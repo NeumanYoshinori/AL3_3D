@@ -2,6 +2,7 @@
 #include <KamataEngine.h>
 #include <numbers>
 #include "Aabb.h"
+#include "Math.h"
 
 using namespace KamataEngine;
 using namespace std;
@@ -9,9 +10,16 @@ using namespace numbers;
 
 class Player;
 class WorldUpdate;
+class Math;
 
 class Enemy {
 public:
+	enum class Behavior {
+		kUnknown,
+		kWalk,
+		kDeath,
+	};
+
 	// 初期化
 	void Initialize(Model* model, Camera* camera, const Vector3& position);
 
@@ -28,7 +36,7 @@ public:
 	AABB GetAABB();
 
 	// 衝突応答
-	void OnCollision();
+	void OnCollision(const Player* player);
 
 	// デスフラグのgetter
 	bool IsDead() const { return isDead_; }
@@ -43,6 +51,7 @@ private:
 	// カメラ
 	Camera* camera_ = nullptr;
 
+	// ワールド変換行列
 	WorldUpdate* worldTransformUpdate_ = nullptr;
 
 	// 歩行の速さ
@@ -66,4 +75,23 @@ private:
 
 	// デスフラグ
 	bool isDead_ = false;
+
+	// 振る舞い
+	Behavior behavior_ = Behavior::kWalk;
+	// 振る舞いリクエスト
+	Behavior behaviorRequest_ = Behavior::kUnknown;
+
+	// カウンター
+	float counter_ = 0.0f;
+
+	// 行列
+	Math* matrix_ = nullptr;
+
+	// 旋回開始角度
+	static inline const float deathAngleStart = 0.0f;
+	// 旋回終了角度
+	static inline const float deathAngleEnd = -60.0f;
+
+	// 死亡時間
+	static inline const float kDeathTime = 0.6f;
 };

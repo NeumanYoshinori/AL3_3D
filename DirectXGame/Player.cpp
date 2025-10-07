@@ -33,18 +33,21 @@ void Player::Update() {
 	if (behaviorRequest_ != Behavior::kUnknown) {
 		// 振る舞いを変更する
 		behavior_ = behaviorRequest_;
-		// 振る舞いを変更する
+
 		switch (behavior_) {
 		case Behavior::kRoot:
 		default:
 			// ルートビヘイビアの初期化
 			BehaviorRootInitialize();
+
 			break;
 		case Behavior::kAttack:
 			// 攻撃ビヘイビアの初期化
 			BehaviorAttackInitialize();
+
 			break;
 		}
+
 		// 振る舞いリクエストをリセット
 		behaviorRequest_ = Behavior::kUnknown;
 	}
@@ -54,9 +57,12 @@ void Player::Update() {
 	case Behavior::kRoot:
 	default:
 		BehaviorRootUpdate();
+
 		break;
+		// 攻撃行動
 	case Behavior::kAttack:
 		BehaviorAttackUpdate();
+
 		break;
 	}
 
@@ -66,6 +72,19 @@ void Player::Update() {
 	worldTransformUpdate_->WorldTransformUpdate(worldTransform_);
 	worldTransformUpdate_->WorldTransformUpdate(worldTransformAttack_);
 }
+
+void Player::BehaviorRootInitialize() {}
+
+void Player::BehaviorAttackInitialize() {
+	// カウンター初期化
+	attackParameter_ = 0;
+
+	// 速度初期化
+	velocity_ = {};
+
+	// 溜めフェーズから始める
+	attackPhase_ = AttackPhase::kCharge;
+};
 
 void Player::BehaviorRootUpdate() {
 	Input();
@@ -113,12 +132,14 @@ void Player::BehaviorAttackUpdate() {
 		float t = static_cast<float>(attackParameter_) / chargeTime;
 		worldTransform_.scale_.z = matrix_->EaseOut(1.0f, 0.3f, t);
 		worldTransform_.scale_.y = matrix_->EaseOut(1.0f, 1.6f, t);
+
 		// 前進動作へ移行
 		if (attackParameter_ >= chargeTime) {
 
 			attackPhase_ = AttackPhase::kDash;
 			attackParameter_ = 0; // カウンターをリセット
 		}
+
 		break;
 	}
 	case AttackPhase::kDash: {
@@ -137,6 +158,7 @@ void Player::BehaviorAttackUpdate() {
 			attackPhase_ = AttackPhase::kRecovery;
 			attackParameter_ = 0; // カウンターをリセット
 		}
+
 		break;
 	}
 	case AttackPhase::kRecovery: {
@@ -149,6 +171,7 @@ void Player::BehaviorAttackUpdate() {
 		if (attackParameter_ >= recoveryTime) {
 			behaviorRequest_ = Behavior::kRoot;
 		}
+
 		break;
 	}
 	}
@@ -547,30 +570,20 @@ AABB Player::GetAABB() {
 }
 
 void Player::OnCollision() {
+	// 突進時なら何もしない
 	if (IsAttack()) {
 		return;
 	}
 
+	// デスフラグを立てる
 	isDead_ = true;
 }
-
-void Player::BehaviorRootInitialize() {};
-
-void Player::BehaviorAttackInitialize() {
-	// カウンター初期化
-	attackParameter_ = 0;
-
-	// 速度初期化
-	velocity_ = {};
-
-	// 溜めフェーズから始める
-	attackPhase_ = AttackPhase::kCharge;
-};
 
 void Player::Draw() {
 	// 3Dモデルを描画
 	model_->Draw(worldTransform_, *camera_);
 
+	// 突進時しか描画ししない
 	if (behavior_ == Behavior::kAttack) {
 		if (attackPhase_ == AttackPhase::kDash) {
 			modelAttack_->Draw(worldTransformAttack_, *camera_);

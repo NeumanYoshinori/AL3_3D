@@ -55,9 +55,13 @@ public:
 	// 更新
 	void Update();
 
+	// 通常行動初期化
+	void BehaviorRootInitialize();
+	// 攻撃行動初期化
+	void BehaviorAttackInitialize();
+
 	// 通常行動更新
 	void BehaviorRootUpdate();
-
 	// 攻撃行動更新
 	void BehaviorAttackUpdate();
 
@@ -116,12 +120,8 @@ public:
 	// デスフラグのgetter
 	bool IsDead() const { return isDead_; }
 
-	// 通常行動初期化
-	void BehaviorRootInitialize();
-	// 攻撃行動初期化
-	void BehaviorAttackInitialize();
-
-	bool IsAttack() { return behavior_ == Behavior::kAttack; };
+	// 攻撃フラグ
+	bool IsAttack() const { return behavior_ == Behavior::kAttack && attackPhase_ == AttackPhase::kDash; };
 
 private:
 	// ワールド変換データ
@@ -140,7 +140,9 @@ private:
 	// マップチップによるフィールド
 	MapChipField* mapChipField_ = nullptr;
 
+	// ワールド変換行列
 	WorldUpdate* worldTransformUpdate_ = nullptr;
+	// 行列
 	Math* matrix_ = nullptr;
 
 	// 移動量
@@ -190,6 +192,7 @@ private:
 
 	// 振る舞い
 	Behavior behavior_ = Behavior::kRoot;
+	// 振る舞いリクエスト
 	Behavior behaviorRequest_ = Behavior::kUnknown;
 
 	// 攻撃ギミックの経過時間カウンター
