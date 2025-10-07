@@ -121,6 +121,8 @@ public:
 	// 攻撃行動初期化
 	void BehaviorAttackInitialize();
 
+	bool IsAttack() { return behavior_ == Behavior::kAttack; };
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;

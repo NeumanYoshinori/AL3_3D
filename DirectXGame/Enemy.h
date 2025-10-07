@@ -8,7 +8,6 @@ using namespace std;
 using namespace numbers;
 
 class Player;
-
 class WorldUpdate;
 
 class Enemy {
@@ -29,7 +28,10 @@ public:
 	AABB GetAABB();
 
 	// 衝突応答
-	void OnCollision(const Player* player);
+	void OnCollision();
+
+	// デスフラグのgetter
+	bool IsDead() const { return isDead_; }
 
 private:
 	// ワールド変換データ
@@ -61,4 +63,7 @@ private:
 	// キャラクターの当たり判定のサイズ
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
+
+	// デスフラグ
+	bool isDead_ = false;
 };

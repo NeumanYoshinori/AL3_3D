@@ -58,8 +58,8 @@ AABB Enemy::GetAABB() {
 	return aabb;
 }
 
-void Enemy::OnCollision(const Player* player) {
-	(void)player;
+void Enemy::OnCollision() {
+	isDead_ = true;
 }
 
 void Enemy::Draw() {

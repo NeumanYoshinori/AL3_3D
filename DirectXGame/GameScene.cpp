@@ -155,6 +155,15 @@ void GameScene::Update() {
 			enemy->Update();
 		}
 
+		// デスフラグの立った敵を削除
+		enemies_.remove_if([](Enemy* enemy) {
+			if (enemy->IsDead()) {
+				delete enemy;
+				return true;
+			}
+			return false;
+		});
+
 		// カメラコントローラの更新
 		cameraController_->Update();
 
@@ -299,7 +308,7 @@ void GameScene::CheckAllCollisions() {
 	// 自キャラの座標
 	aabb1 = player_->GetAABB();
 
-	// 自キャラと敵弾全ての当たり判定
+	// 自キャラと敵全ての当たり判定
 	for (Enemy* enemy : enemies_) {
 		// 敵弾の座標
 		aabb2 = enemy->GetAABB();
@@ -309,7 +318,7 @@ void GameScene::CheckAllCollisions() {
 			// 自キャラの衝突時関数を呼び出す
 			player_->OnCollision();
 			// 敵の衝突時関数を呼び出す
-			enemy->OnCollision(player_);
+			enemy->OnCollision();
 		}
 	}
 
@@ -322,6 +331,7 @@ void GameScene::ChangePhase() {
 	case Phase::kPlay:
 		if (player_->IsDead()) {
 			// 死亡演出フェーズに切り替え
+			phase_ = Phase::kDeath;
 			phase_ = Phase::kDeath;
 			// 自キャラの座標を取得
 			const Vector3& deathParticlesPosition = player_->GetWorldPosition();
