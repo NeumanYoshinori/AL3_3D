@@ -4,6 +4,8 @@
 #include <numbers>
 
 using namespace KamataEngine;
+using namespace std;
+using namespace numbers;
 
 class Math;
 
@@ -36,14 +38,14 @@ private:
 	// パーティクルの個数
 	static inline const uint32_t kNumParticles = 8;
 
-	std::array<WorldTransform, kNumParticles> worldTransforms_;
+	array<WorldTransform, kNumParticles> worldTransforms_;
 
 	// 存続時間（消滅までの時間）<秒>
 	static inline const float kDuration = 1.0f;
 	// 移動の速さ
 	static inline const float kSpeed = 0.1f;
 	// 分割した１個分の角度
-	static inline const float kAngleUnit = 2 * std::numbers::pi_v<float> / kNumParticles;
+	static inline const float kAngleUnit = 2 * pi_v<float> / kNumParticles;
 
 	// 終了フラグ
 	bool isFinished_ = false;

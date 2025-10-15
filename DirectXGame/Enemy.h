@@ -8,14 +8,13 @@ using namespace std;
 using namespace numbers;
 
 class Player;
-class WorldUpdate;
 class Math;
 class GameScene;
 
 class Enemy {
 public:
 	enum class Behavior {
-		kUnknown,
+		kUnknown = -1,
 		kWalk,
 		kDeath,
 	};
@@ -55,9 +54,6 @@ private:
 
 	// カメラ
 	Camera* camera_ = nullptr;
-
-	// ワールド変換行列
-	WorldUpdate* worldTransformUpdate_ = nullptr;
 
 	// 歩行の速さ
 	static inline const float kWalkSpeed = 0.02f;

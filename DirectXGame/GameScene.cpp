@@ -39,10 +39,7 @@ GameScene::~GameScene() {
 		delete enemy;
 	}
 
-	// デスパーティクルの解放
-	if (deathParticles_) {
-		delete deathParticles_;
-	}
+	delete deathParticles_;
 	delete modelDeathParticle_;
 
 	// フェードの解放
@@ -111,9 +108,10 @@ void GameScene::Initialize() {
 		enemies_.push_back(newEnemy_);
 	}
 
-	modelHitEffect_ = new Model();
+	modelDeathParticle_ = Model::CreateFromOBJ("deathParticle", true);
+
 	// ヒットエフェクト用モデルの読み込み
-	modelHitEffect_->CreateFromOBJ("particle");
+	modelHitEffect_ = Model::CreateFromOBJ("particle");
 
 	// ゲームプレイフェーズから開始
 	phase_ = Phase::kFadeIn;
@@ -122,15 +120,27 @@ void GameScene::Initialize() {
 	fade_ = new Fade();
 	fade_->Initialize();
 	fade_->Start(Fade::Status::FadeIn, 1.0f);
+
 	HitEffect::SetModel(modelHitEffect_);
 	HitEffect::SetCamera(&camera_);
 }
 
 void GameScene::Update() {
+	// デスフラグの立ったエフェクトを削除
+	hitEffects_.remove_if([](HitEffect* hitEffect) {
+		if (hitEffect->IsDead()) {
+			delete hitEffect;
+
+			return true;
+		}
+		return false;
+	});
+
 	// デスフラグの立った敵を削除
 	enemies_.remove_if([](Enemy* enemy) {
 		if (enemy->IsDead()) {
 			delete enemy;
+
 			return true;
 		}
 		return false;
@@ -381,7 +391,6 @@ void GameScene::ChangePhase() {
 			// 自キャラの座標を取得
 			const Vector3& deathParticlesPosition = player_->GetWorldPosition();
 
-			modelDeathParticle_ = Model::CreateFromOBJ("deathParticle", true);
 			deathParticles_ = new DeathParticles;
 			deathParticles_->Initialize(modelDeathParticle_, &camera_, deathParticlesPosition);
 		}

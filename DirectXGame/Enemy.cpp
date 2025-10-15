@@ -27,6 +27,7 @@ void Enemy::Update() {
 
 		switch (behavior_) {
 		case Behavior::kDeath:
+		default:
 			counter_ = 0;
 
 			break;
@@ -70,9 +71,6 @@ void Enemy::Update() {
 
 		break;
 	}
-
-	// ワールド行列の更新
-	matrix_->WorldTransformUpdate(worldTransform_);
 }
 
 Vector3 Enemy::GetWorldPosition() {
@@ -118,6 +116,8 @@ void Enemy::OnCollision(const Player* player) {
 
 		// 敵の振るまいをデス演出に変更
 		behaviorRequest_ = Behavior::kDeath;
+
+		// 衝突を無効化
 		isCollisionDisabled_ = true;
 	}
 }

@@ -98,7 +98,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// 描画開始
 		dxCommon->PreDraw();
 
-		// 現ザーシーンの描画
+		// 現在シーンの描画
 		DrawScene();
 
 		// 描画終了

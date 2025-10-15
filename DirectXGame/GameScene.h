@@ -97,9 +97,6 @@ private:
 	// 敵モデル
 	Model* modelEnemy_ = nullptr;
 
-	// AABB
-	Aabb* aabb = nullptr;
-
 	// デスパーティクル
 	DeathParticles* deathParticles_ = nullptr;
 	// デスパーティクルモデル
