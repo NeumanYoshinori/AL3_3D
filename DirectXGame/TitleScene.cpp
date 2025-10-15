@@ -1,5 +1,5 @@
 #include "TitleScene.h"
-#include "worldTransform.h"
+#include "Math.h"
 #include <numbers>
 
 TitleScene::~TitleScene() {
@@ -31,7 +31,7 @@ void TitleScene::Initialize() {
 	worldTransformPlayer_.scale_ = { playerScale, playerScale, playerScale };
 
 	// プレイヤーの角度
-	worldTransformPlayer_.rotation_.y = std::numbers::pi_v<float> * 0.95f;
+	worldTransformPlayer_.rotation_.y = pi_v<float> * 0.95f;
 
 	// プレイヤーの位置
 	worldTransformPlayer_.translation_.x = -2.0f;
@@ -77,7 +77,7 @@ void TitleScene::Update() {
 	counter_ += 1.0f / 60.0f;
 
 	// 角度
-	float angle = std::sin(2.0f * std::numbers::pi_v<float> * counter_ / kTitleMoveTime);
+	float angle = std::sin(2.0f * pi_v<float> * counter_ / kTitleMoveTime);
 
 	// タイトルを移動
 	worldTransformTitle_.translation_.y = angle + 10.0f;
@@ -85,8 +85,8 @@ void TitleScene::Update() {
 	camera_.TransferMatrix();
 
 	// アフィン変換
-	worldTransformUpdate_->WorldTransformUpdate(worldTransformTitle_);
-	worldTransformUpdate_->WorldTransformUpdate(worldTransformPlayer_);
+	matrix_->WorldTransformUpdate(worldTransformTitle_);
+	matrix_->WorldTransformUpdate(worldTransformPlayer_);
 }
 
 void TitleScene::Draw() {

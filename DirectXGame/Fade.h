@@ -2,6 +2,7 @@
 #include <KamataEngine.h>
 
 using namespace KamataEngine;
+using namespace std;
 
 /// <summary>
 /// フェード

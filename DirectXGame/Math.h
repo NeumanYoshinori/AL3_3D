@@ -6,6 +6,11 @@ using namespace KamataEngine;
 using namespace std;
 using namespace numbers;
 
+struct AABB {
+	Vector3 min;
+	Vector3 max;
+};
+
 const Vector3 operator+(const Vector3& v1, const Vector3& v2);
 
 const Vector3 operator*(const Vector3& v1, const float f);
@@ -42,6 +47,9 @@ public:
 	// アフィン変換行列の作成
 	Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const Vector3& translate);
 
+	// ワールドトランスフォーム更新
+	void WorldTransformUpdate(WorldTransform& worldTransform);
+
 	float EaseOut(float x1, float x2, float t);
 	float EaseInOut(float x1, float x2, float t);
 
@@ -58,6 +66,8 @@ public:
 
 	// 座標変換
 	Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix4x4);
+
+	bool IsCollision(const AABB& aabb, const AABB& aabb2);
 
 private:
 };

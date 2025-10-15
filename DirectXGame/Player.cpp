@@ -2,8 +2,6 @@
 
 #include "Player.h"
 #include <cassert>
-#include "Math.h"
-#include "worldTransform.h"
 #include <algorithm>
 #include "MapChipField.h"
 
@@ -12,8 +10,6 @@ void Player::Initialize(Model* model, Model* modelAttack, Camera* camera, const 
 	assert(model);
 	// 引数として受け取ったデータをメンバ変数に記録する
 	model_ = model;
-
-	assert(modelAttack);
 	modelAttack_ = modelAttack;
 
 	// ワールド変換の初期化
@@ -69,8 +65,8 @@ void Player::Update() {
 	Turn();
 
 	// 行列計算
-	worldTransformUpdate_->WorldTransformUpdate(worldTransform_);
-	worldTransformUpdate_->WorldTransformUpdate(worldTransformAttack_);
+	matrix_->WorldTransformUpdate(worldTransform_);
+	matrix_->WorldTransformUpdate(worldTransformAttack_);
 }
 
 void Player::BehaviorRootInitialize() {}
@@ -90,7 +86,7 @@ void Player::BehaviorRootUpdate() {
 	Input();
 
 	// 衝突情報を初期化
-	CollisionMapInfo collisionMapInfo{};
+	CollisionMapInfo collisionMapInfo = {};
 	// 移動量に速度の値をコピー
 	collisionMapInfo.move = velocity_;
 	collisionMapInfo.hitGround = false;
@@ -114,14 +110,14 @@ void Player::BehaviorRootUpdate() {
 }
 
 void Player::BehaviorAttackUpdate() {
-	// 予備動作
-	attackParameter_++;
-
 	// 攻撃の移動速度
 	const Vector3 attackVelocity = {0.8f, 0.0f, 0.0f};
 
 	// 攻撃動作用の速度
 	Vector3 velocity{};
+
+	// 予備動作
+	attackParameter_++;
 
 	// 攻撃動作ごとの更新処理
 	switch (attackPhase_) {
@@ -135,7 +131,6 @@ void Player::BehaviorAttackUpdate() {
 
 		// 前進動作へ移行
 		if (attackParameter_ >= chargeTime) {
-
 			attackPhase_ = AttackPhase::kDash;
 			attackParameter_ = 0; // カウンターをリセット
 		}
@@ -549,11 +544,13 @@ void Player::Turn() {
 	}
 }
 
-Vector3 Player::GetWorldPosition() {
+Vector3 Player::GetWorldPosition()const{
 	// ワールド座標を入れる変数
-	Vector3 worldPos{};
+	Vector3 worldPos = {};
 	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos = worldTransform_.translation_;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
 	return worldPos;
 }
@@ -561,7 +558,7 @@ Vector3 Player::GetWorldPosition() {
 AABB Player::GetAABB() {
 	Vector3 worldPos = GetWorldPosition();
 
-	AABB aabb{};
+	AABB aabb = {};
 
 	aabb.min = {worldPos.x - kWidth / 2.0f, worldPos.y - kHeight / 2.0f, worldPos.z - kWidth / 2.0f};
 	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kWidth / 2.0f};
@@ -569,14 +566,19 @@ AABB Player::GetAABB() {
 	return aabb;
 }
 
-void Player::OnCollision() {
+void Player::OnCollision(const Enemy* enemy) {
+
 	// 突進時なら何もしない
 	if (IsAttack()) {
 		return;
 	}
 
+	(void)enemy;
+
 	// デスフラグを立てる
 	isDead_ = true;
+
+	isCollisionDisabled_ = true;
 }
 
 void Player::Draw() {
@@ -585,8 +587,13 @@ void Player::Draw() {
 
 	// 突進時しか描画ししない
 	if (behavior_ == Behavior::kAttack) {
-		if (attackPhase_ == AttackPhase::kDash) {
+		switch (attackPhase_) {
+		case AttackPhase::kCharge:
+			break;
+		case AttackPhase::kDash:
+		case AttackPhase::kRecovery:
 			modelAttack_->Draw(worldTransformAttack_, *camera_);
+			break;
 		}
 	}
 }

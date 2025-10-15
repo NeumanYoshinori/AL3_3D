@@ -1,9 +1,8 @@
 #include "Enemy.h"
-#include "Math.h"
-#include "worldTransform.h"
 #include <cassert>
 #include <numbers>
 #include "Player.h"
+#include "GameScene.h"
 
 void Enemy::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	// NULLポインタチェック
@@ -50,7 +49,7 @@ void Enemy::Update() {
 		worldTransform_.rotation_.x = sin(2 * pi_v<float> * walkTimer_ / kWalkMotionTime);
 
 		// ワールドトランスフォームの行列更新
-		worldTransformUpdate_->WorldTransformUpdate(worldTransform_);
+		matrix_->WorldTransformUpdate(worldTransform_);
 
 		break;
 		// デス演出
@@ -63,7 +62,7 @@ void Enemy::Update() {
 		worldTransform_.rotation_.x = matrix_->EaseOut(matrix_->ToRadians(deathAngleStart), matrix_->ToRadians(deathAngleEnd), counter_ / kDeathTime);
 
 		// ワールドトランスフォームの行列更新
-		worldTransformUpdate_->WorldTransformUpdate(worldTransform_);
+		matrix_->WorldTransformUpdate(worldTransform_);
 
 		if (counter_ >= kDeathTime) {
 			isDead_ = true;
@@ -73,14 +72,16 @@ void Enemy::Update() {
 	}
 
 	// ワールド行列の更新
-	worldTransformUpdate_->WorldTransformUpdate(worldTransform_);
+	matrix_->WorldTransformUpdate(worldTransform_);
 }
 
 Vector3 Enemy::GetWorldPosition() {
 	// ワールド座標を入れる変数
-	Vector3 worldPos{};
+	Vector3 worldPos;
 	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos = worldTransform_.translation_;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
 	return worldPos;
 }
@@ -104,6 +105,17 @@ void Enemy::OnCollision(const Player* player) {
 
 	// プレイヤーが攻撃中なら敵が死ぬ
 	if (player->IsAttack()) {
+		if (gameScene_) {
+			Vector3 playerPos = player->GetWorldPosition();
+
+			// 敵と自キャラの中間位置にエフェクトを生成
+			Vector3 effectPos;
+			effectPos.x = (GetWorldPosition() + playerPos).x / 2.0f;
+			effectPos.y = (GetWorldPosition() + playerPos).y / 2.0f;
+			effectPos.z = (GetWorldPosition() + playerPos).z / 2.0f;
+			gameScene_->CreateHitEffect(effectPos);
+		}
+
 		// 敵の振るまいをデス演出に変更
 		behaviorRequest_ = Behavior::kDeath;
 		isCollisionDisabled_ = true;

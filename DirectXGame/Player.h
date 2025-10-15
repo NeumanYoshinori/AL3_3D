@@ -1,7 +1,7 @@
 #pragma once
 #include "KamataEngine.h"
-#include "AABB.h"
 #include <numbers>
+#include "Math.h"
 
 using namespace KamataEngine;
 using namespace std;
@@ -9,7 +9,6 @@ using namespace numbers;
 
 class MapChipField;
 class Enemy;
-class WorldUpdate;
 class Math;
 
 // 自キャラ
@@ -109,19 +108,21 @@ public:
 	void Turn();
 
 	// ワールド座標を取得
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition()const;
 
 	// AABBを取得
 	AABB GetAABB();
 
 	// 衝突応答
-	void OnCollision();
+	void OnCollision(const Enemy* enemy);
 
 	// デスフラグのgetter
 	bool IsDead() const { return isDead_; }
 
 	// 攻撃フラグ
 	bool IsAttack() const { return behavior_ == Behavior::kAttack && attackPhase_ == AttackPhase::kDash; };
+
+	bool IsCollisionDisabled() const { return isCollisionDisabled_; }
 
 private:
 	// ワールド変換データ
@@ -140,8 +141,6 @@ private:
 	// マップチップによるフィールド
 	MapChipField* mapChipField_ = nullptr;
 
-	// ワールド変換行列
-	WorldUpdate* worldTransformUpdate_ = nullptr;
 	// 行列
 	Math* matrix_ = nullptr;
 
@@ -207,4 +206,7 @@ private:
 
 	// 現在の攻撃フェーズ
 	AttackPhase attackPhase_;
+
+	// 衝突無効化
+	bool isCollisionDisabled_ = false;
 };

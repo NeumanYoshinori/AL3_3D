@@ -1,5 +1,5 @@
 #pragma once
-#include "KamataEngine.h"
+#include <KamataEngine.h>
 #include "Player.h"
 #include <vector>
 #include "Skydome.h"
@@ -8,9 +8,9 @@
 #include "Enemy.h"
 #include "DeathParticles.h"
 #include "Fade.h"
+#include "HitEffect.h"
 
-class WorldUpdate;
-
+class Math;
 class Aabb;
 
 class GameScene {
@@ -51,6 +51,9 @@ public:
 
 	bool IsFinished() const { return finished_; }
 
+	// エフェクトを生成
+	void CreateHitEffect(const Vector3& position);
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -70,7 +73,8 @@ private:
 	Model* modelBlock_ = nullptr;
 	vector<vector<WorldTransform*>> worldTransformBlocks_;
 
-	WorldUpdate* worldTransformUpdate_ = nullptr;
+	// 行列
+	Math* matrix_ = nullptr;
 
 	// デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
@@ -108,4 +112,9 @@ private:
 	bool finished_ = false;
 
 	Fade* fade_ = nullptr;
+
+	// ヒットエフェクトモデル
+	Model* modelHitEffect_ = nullptr;
+	// ヒットエフェクト
+	list<HitEffect*> hitEffects_;
 };

@@ -19,18 +19,18 @@ void Fade::Update() {
 		// 1フレーム分の秒数をカウントアップ
 		counter_ += 1.0f / 60.0f;
 		// フェード継続時間に達したら打ち止め
-		counter_ = std::min(counter_, duration_);
+		counter_ = min(counter_, duration_);
 		// 0.0fから1.0fの間で、経過時間がフェード継続時間に近づくほどアルファ値を小さくする
-		sprite_->SetColor(Vector4(0, 0, 0, std::clamp(1.0f - counter_ / duration_, 0.0f, 1.0f)));
+		sprite_->SetColor(Vector4(0, 0, 0, clamp(1.0f - counter_ / duration_, 0.0f, 1.0f)));
 
 		break;
 	case Status::FadeOut:
 		// 1フレーム分の秒数をカウントアップ
 		counter_ += 1.0f / 60.0f;
 		// フェード継続時間に達したら打ち止め
-		counter_ = std::min(counter_, duration_);
+		counter_ = min(counter_, duration_);
 		// 0.0fから1.0fの間で、経過時間がフェード継続時間に近づくほどアルファ値を大きくする
-		sprite_->SetColor(Vector4(0, 0, 0, std::clamp(counter_ / duration_, 0.0f, 1.0f)));
+		sprite_->SetColor(Vector4(0, 0, 0, clamp(counter_ / duration_, 0.0f, 1.0f)));
 
 		break;
 	}

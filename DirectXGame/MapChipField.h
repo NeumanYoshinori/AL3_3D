@@ -3,6 +3,7 @@
 #include "KamataEngine.h"
 
 using namespace KamataEngine;
+using namespace std;
 
 enum class MapChipType {
 	kBlank, // 空白
@@ -10,7 +11,7 @@ enum class MapChipType {
 };
 
 struct MapChipData {
-	std::vector<std::vector<MapChipType>> data;
+	vector<vector<MapChipType>> data;
 };
 
 /// <summary>
@@ -36,7 +37,7 @@ public:
 
 	void ResetMapChipData();
 
-	void LoadMapChipCsv(const std::string& filePath);
+	void LoadMapChipCsv(const string& filePath);
 
 	MapChipType GetMapChipTypeByIndex(uint32_t xIndex, uint32_t yIndex);
 	Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex);

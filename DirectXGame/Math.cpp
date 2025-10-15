@@ -56,6 +56,13 @@ Matrix4x4 Math::MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const
 	return result;
 }
 
+void Math::WorldTransformUpdate(WorldTransform& worldTransform) {
+	// スケール、回転、平行移動を合成して行列を計算する
+	worldTransform.matWorld_ = MakeAffineMatrix(worldTransform.scale_, worldTransform.rotation_, worldTransform.translation_);
+	// 定数バッファへの書き込み
+	worldTransform.TransferMatrix();
+}
+
 float Math::EaseOut(float x1, float x2, float t) {
 	float easedT = 1.0f - powf(1.0f - t, 3.0f);
 
@@ -100,6 +107,15 @@ Vector3 Math::Transform(const Vector3& vector, const Matrix4x4& matrix4x4) {
 	result.z /= w;
 
 	return result;
+}
+
+bool Math::IsCollision(const AABB& aabb1, const AABB& aabb2) {
+	if (aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x && aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y && aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z) {
+		// 衝突
+		return true;
+	}
+
+	return false;
 }
 
 const Vector3 operator+(const Vector3& v1, const Vector3& v2) {

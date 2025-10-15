@@ -5,8 +5,6 @@
 
 using namespace KamataEngine;
 
-class WorldUpdate;
-
 class Math;
 
 /// <summary>
@@ -32,8 +30,7 @@ private:
 	// カメラ
 	Camera* camera_ = nullptr;
 
-	WorldUpdate* worldTransformUpdate_ = nullptr;
-
+	// 行列
 	Math* matrix_ = nullptr;
 
 	// パーティクルの個数

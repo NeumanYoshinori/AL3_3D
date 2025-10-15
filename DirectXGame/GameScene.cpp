@@ -1,7 +1,11 @@
 #include "GameScene.h"
 #include "Math.h"
-#include "worldTransform.h"
-#include "AABB.h"
+
+// エフェクトを生成
+void GameScene::CreateHitEffect(const Vector3& position) {
+	HitEffect* newHitEffect = HitEffect::Create(position);
+	hitEffects_.push_back(newHitEffect);
+}
 
 GameScene::~GameScene() {
 	// 3Dモデルデータの解放
@@ -43,6 +47,14 @@ GameScene::~GameScene() {
 
 	// フェードの解放
 	delete fade_;
+
+	// ヒットエフェクト用モデルの解放
+	delete modelHitEffect_;
+
+	// ヒットエフェクトの解放
+	for (HitEffect* hitEffect : hitEffects_) {
+		delete hitEffect;
+	}
 }
 
 void GameScene::Initialize() {
@@ -58,8 +70,8 @@ void GameScene::Initialize() {
 	GenerateBlocks();
 
 	// 3Dモデルデータの生成
-	modelPlayer_ = Model::CreateFromOBJ("player", true);
-	modelAttack_ = Model::CreateFromOBJ("attack_effect", true);
+	modelPlayer_ = Model::CreateFromOBJ("player");
+	modelAttack_ = Model::CreateFromOBJ("attack_effect");
 	// 自キャラの生成
 	player_ = new Player();
 	// 座標をマップチップ番号で指定
@@ -71,7 +83,7 @@ void GameScene::Initialize() {
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
 	// 天球の生成
-	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	modelSkydome_ = Model::CreateFromOBJ("skydome");
 	// 天球の初期化
 	skydome_ = new Skydome();
 	skydome_->Initialize(modelSkydome_, &camera_);
@@ -87,7 +99,7 @@ void GameScene::Initialize() {
 	cameraController_->SetMovableArea(cameraArea);
 
 	// 3Dモデルデータの生成
-	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
+	modelEnemy_ = Model::CreateFromOBJ("enemy");
 	for (uint32_t i = 0; i < 3; ++i) {
 		// 敵の生成
 		Enemy* newEnemy_ = new Enemy();
@@ -95,8 +107,13 @@ void GameScene::Initialize() {
 		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14 + i * 4, 18);
 		newEnemy_->Initialize(modelEnemy_, &camera_, enemyPosition);
 
+		newEnemy_->SetGameScene(this);
 		enemies_.push_back(newEnemy_);
 	}
+
+	modelHitEffect_ = new Model();
+	// ヒットエフェクト用モデルの読み込み
+	modelHitEffect_->CreateFromOBJ("particle");
 
 	// ゲームプレイフェーズから開始
 	phase_ = Phase::kFadeIn;
@@ -105,9 +122,20 @@ void GameScene::Initialize() {
 	fade_ = new Fade();
 	fade_->Initialize();
 	fade_->Start(Fade::Status::FadeIn, 1.0f);
+	HitEffect::SetModel(modelHitEffect_);
+	HitEffect::SetCamera(&camera_);
 }
 
 void GameScene::Update() {
+	// デスフラグの立った敵を削除
+	enemies_.remove_if([](Enemy* enemy) {
+		if (enemy->IsDead()) {
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
+
 	// フェーズの変更
 	ChangePhase();
 
@@ -142,6 +170,11 @@ void GameScene::Update() {
 		// ブロックの更新
 		UpdateBlocks();
 
+		// ヒットエフェクトの更新
+		for (HitEffect* hitEffect : hitEffects_) {
+			hitEffect->Update();
+		}
+
 		break;
 	case Phase::kPlay:
 		// 天球の更新
@@ -155,15 +188,6 @@ void GameScene::Update() {
 			enemy->Update();
 		}
 
-		// デスフラグの立った敵を削除
-		enemies_.remove_if([](Enemy* enemy) {
-			if (enemy->IsDead()) {
-				delete enemy;
-				return true;
-			}
-			return false;
-		});
-
 		// カメラコントローラの更新
 		cameraController_->Update();
 
@@ -175,6 +199,11 @@ void GameScene::Update() {
 
 		// 全ての当たり判定を行う
 		CheckAllCollisions();
+
+		// ヒットエフェクトの更新
+		for (HitEffect* hitEffect : hitEffects_) {
+			hitEffect->Update();
+		}
 
 		break;
 	case Phase::kDeath:
@@ -193,7 +222,6 @@ void GameScene::Update() {
 
 		// フェードが終わったら次のフェーズに
 		if (deathParticles_ && deathParticles_->IsFinished()) {
-			fade_->Fade::Start(Fade::Status::FadeOut, 1.0f);
 			phase_ = Phase::kFadeOut;
 		}
 
@@ -202,6 +230,11 @@ void GameScene::Update() {
 
 		// ブロックの更新
 		UpdateBlocks();
+
+		// ヒットエフェクトの更新
+		for (HitEffect* hitEffect : hitEffects_) {
+			hitEffect->Update();
+		}
 
 		break;
 	case Phase::kFadeOut:
@@ -226,6 +259,11 @@ void GameScene::Update() {
 		// ブロックの更新
 		UpdateBlocks();
 
+		// ヒットエフェクトの更新
+		for (HitEffect* hitEffect : hitEffects_) {
+			hitEffect->Update();
+		}
+
 		break;
 	}
 }
@@ -246,7 +284,7 @@ void GameScene::Draw() {
 	skydome_->Draw();
 
 	// ブロックの描画
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+	for (vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
 				continue;
@@ -263,6 +301,11 @@ void GameScene::Draw() {
 	// デスパーティクルの描画
 	if (deathParticles_) {
 		deathParticles_->Draw();
+	}
+
+	for (HitEffect* hitEffect : hitEffects_) {
+		// ヒットエフェクトの描画
+		hitEffect->Draw();
 	}
 
 	Model::PostDraw();
@@ -317,9 +360,9 @@ void GameScene::CheckAllCollisions() {
 		aabb2 = enemy->GetAABB();
 
 		// AABB同士の交差判定
-		if (aabb->IsCollision(aabb1, aabb2)) {
+		if (matrix_->IsCollision(aabb1, aabb2)) {
 			// 自キャラの衝突時関数を呼び出す
-			player_->OnCollision();
+			player_->OnCollision(enemy);
 			// 敵の衝突時関数を呼び出す
 			enemy->OnCollision(player_);
 		}
@@ -334,7 +377,6 @@ void GameScene::ChangePhase() {
 	case Phase::kPlay:
 		if (player_->IsDead()) {
 			// 死亡演出フェーズに切り替え
-			phase_ = Phase::kDeath;
 			phase_ = Phase::kDeath;
 			// 自キャラの座標を取得
 			const Vector3& deathParticlesPosition = player_->GetWorldPosition();
@@ -361,8 +403,6 @@ void GameScene::UpdateCamera() {
 	} else {
 		camera_.UpdateMatrix();
 	}
-
-	debugCamera_->Update();
 }
 
 void GameScene::UpdateBlocks() {
@@ -372,7 +412,7 @@ void GameScene::UpdateBlocks() {
 			if (!worldTransformBlock)
 				continue;
 
-			worldTransformUpdate_->WorldTransformUpdate(*worldTransformBlock);
+			matrix_->WorldTransformUpdate(*worldTransformBlock);
 		}
 	}
 }

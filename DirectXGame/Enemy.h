@@ -1,7 +1,6 @@
 #pragma once
 #include <KamataEngine.h>
 #include <numbers>
-#include "Aabb.h"
 #include "Math.h"
 
 using namespace KamataEngine;
@@ -11,6 +10,7 @@ using namespace numbers;
 class Player;
 class WorldUpdate;
 class Math;
+class GameScene;
 
 class Enemy {
 public:
@@ -43,6 +43,8 @@ public:
 
 	// コリジョンが無効か
 	bool IsCollisionDisabled() const { return isCollisionDisabled_; }
+
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 
 private:
 	// ワールド変換データ
@@ -100,4 +102,7 @@ private:
 
 	// コリジョン無効フラグ
 	bool isCollisionDisabled_ = false;
+	
+	// ゲームシーン
+	GameScene* gameScene_ = nullptr;
 };

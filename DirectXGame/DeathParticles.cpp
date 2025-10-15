@@ -1,5 +1,4 @@
 #include "DeathParticles.h"
-#include "worldTransform.h"
 #include "Math.h"
 #include <algorithm>
 
@@ -50,13 +49,13 @@ void DeathParticles::Update() {
 		isFinished_ = true;
 	}
 
-	color_.w = std::clamp(1.0f - counter_ / kDuration, 0.0f, 1.0f);
+	color_.w = clamp(1.0f - counter_ / kDuration, 0.0f, 1.0f);
 	// 色変更オブジェクトに色の数値を設定する
 	objectColor_.SetColor(color_);
 
 	// ワールド変換の更新
 	for (auto& worldTransform : worldTransforms_) {
-		worldTransformUpdate_->WorldTransformUpdate(worldTransform);
+		matrix_->WorldTransformUpdate(worldTransform);
 	}
 }
 

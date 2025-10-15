@@ -4,7 +4,7 @@
 
 using namespace KamataEngine;
 
-class WorldUpdate;
+class Math;
 
 /// <summary>
 /// タイトルシーン
@@ -36,7 +36,8 @@ private:
 	WorldTransform worldTransformTitle_;
 	WorldTransform worldTransformPlayer_;
 
-	WorldUpdate* worldTransformUpdate_ = nullptr;
+	// 行列
+	Math* matrix_ = nullptr;
 
 	// カメラ
 	Camera camera_;
