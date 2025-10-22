@@ -11,7 +11,6 @@
 #include "HitEffect.h"
 
 class Math;
-class Aabb;
 
 class GameScene {
 public:
