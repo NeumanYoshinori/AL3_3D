@@ -35,4 +35,6 @@ public:
 	KamataEngine::Matrix4x4 MakeAffineMatrix(const KamataEngine::Vector3& scale, const KamataEngine::Vector3& rot, const KamataEngine::Vector3& translate);
 	// ワールド変換
 	void WorldTransformUpdate(KamataEngine::WorldTransform& worldTransform);
+	// ベクトル変換
+	KamataEngine::Vector3 TransformNormal(const KamataEngine::Vector3& v, const KamataEngine::Matrix4x4& m);
 };
