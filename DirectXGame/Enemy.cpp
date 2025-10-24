@@ -19,17 +19,15 @@ void Enemy::Initialize(Model* model, const Vector3& position) {
 	worldTransform_.translation_ = position;
 }
 
+// staticで宣言したメンバ関数ポインタテーブルの実体
+void (Enemy::*Enemy::spFuncPhaseTable[])() = {
+    &Enemy::Approach, // 要素番号0
+    &Enemy::Leave     // 要素番号1
+};
+
 void Enemy::Update() {
-	switch (phase_) {
-	case Phase::Approach:
-		// 接近フェーズの更新
-		Approach();
-		break;
-	case Phase::Leave:
-		// 離脱フェーズの更新
-		Leave();
-		break;
-	}
+	// メンバ関数ポインタに入っている関数を呼び出す
+	(this->*spFuncPhaseTable[static_cast<size_t>(phase_)])();
 
 	// ワールドトランスフォーム更新
 	math_->WorldTransformUpdate(worldTransform_);

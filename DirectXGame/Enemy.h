@@ -47,4 +47,7 @@ private:
 	static inline const KamataEngine::Vector3 kApproachSpeed = {0.0f, 0.0f, -0.2f};
 	// 離脱フェーズの速度
 	static inline const KamataEngine::Vector3 kLeaveSpeed = {-0.2f, 0.2f, -0.2f};
+
+	// メンバ関数ポインタ
+	static void (Enemy::*spFuncPhaseTable[])();
 };
