@@ -28,7 +28,7 @@ void GameScene::Initialize() {
 	// 自キャラの生成
 	player_ = new Player();
 	// 自キャラの初期化
-	player_->Initialize(model_, textureHandle_, &camera_);
+	player_->Initialize(model_, textureHandle_);
 }
 
 void GameScene::Update() {
@@ -59,7 +59,7 @@ void GameScene::Draw() {
 	Model::PreDraw(dxCommon->GetCommandList());
 
 	// プレイヤーの描画
-	player_->Draw();
+	player_->Draw(camera_);
 
 	Model::PostDraw();
 }

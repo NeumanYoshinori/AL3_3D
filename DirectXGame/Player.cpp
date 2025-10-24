@@ -7,19 +7,23 @@
 using namespace KamataEngine;
 using namespace std;
 
-void Player::Initialize(Model* model, uint32_t textureHandle, Camera* camera) {
+void Player::Initialize(Model* model, uint32_t textureHandle) {
 	// NULLポインタチェック
 	assert(model);
+
 	// 引数として受け取ったデータをメンバ変数に記録する
 	model_ = model;
 	textureHandle_ = textureHandle;
+
 	// ワールド変換の初期化
 	worldTransform_.Initialize();
-	// 引数の内容をメンバ変数に記録
-	camera_ = camera;
 }
 
 void Player::Update() {
+	// 旋回
+	Rotate();
+
+	// プレイヤー旋回処理
 	// キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};
 
@@ -53,6 +57,14 @@ void Player::Update() {
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
+	// プレイヤー攻撃処理
+	Attack();
+
+	// 弾更新
+	if (bullet_) {
+		bullet_->Update();
+	}
+
 	// ワールド行列の更新
 	math_->WorldTransformUpdate(worldTransform_);
 
@@ -62,7 +74,35 @@ void Player::Update() {
 	ImGui::End();
 }
 
-void Player::Draw() {
+void Player::Draw(Camera& camera) {
 	// 3Dモデルを描画
-	model_->Draw(worldTransform_, *camera_, textureHandle_);
+	model_->Draw(worldTransform_, camera, textureHandle_);
+
+	// 弾描画
+	if (bullet_) {
+		bullet_->Draw(camera);
+	}
+}
+
+void Player::Rotate() {
+	// 回転速さ[ラジアン/frame]
+	const float kRotSpeed = 0.02f;
+
+	// 押した方向で移動ベクトルを変更
+	if (input_->PushKey(DIK_A)) {
+		worldTransform_.rotation_.y -= kRotSpeed;
+	} else if (input_->PushKey(DIK_D)) {
+		worldTransform_.rotation_.y += kRotSpeed;
+	}
+}
+
+void Player::Attack() {
+	if (input_->TriggerKey(DIK_SPACE)) {
+		// 弾を生成し、初期化
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+
+		// 弾を登録する
+		bullet_ = newBullet;
+	}
 }
