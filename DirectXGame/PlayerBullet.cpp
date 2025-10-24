@@ -10,6 +10,7 @@ void PlayerBullet::Initialize(KamataEngine::Model* model, const KamataEngine::Ve
 	// NULLポインタチェック
 	assert(model);
 
+	// モデルをセット
 	model_ = model;
 	// テクスチャ読み込み
 	textureHandle_ = TextureManager::Load("uvChecker.png");

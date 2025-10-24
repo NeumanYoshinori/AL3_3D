@@ -9,6 +9,7 @@ void Enemy::Initialize(Model* model, const Vector3& position) {
 	// NULLポインタチェック
 	assert(model);
 
+	// モデルをセット
 	model_ = model;
 	// テクスチャ読み込み
 	textureHandle_ = TextureManager::Load("enemyPlane.jpg");
