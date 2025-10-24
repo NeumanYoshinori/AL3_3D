@@ -7,6 +7,8 @@ GameScene::~GameScene() {
 	delete model_;
 	delete player_;
 
+	delete enemy_;
+
 	// デバッグカメラの更新
 	delete debugCamera_;
 }
@@ -16,7 +18,7 @@ void GameScene::Initialize() {
 	worldTransform_.Initialize();
 
 	// テクスチャを読み込む
-	textureHandle_ = TextureManager::Load("genosekuto.jpg");
+	textureHandle_ = TextureManager::Load("mariokart.jpg");
 	// 3Dモデルデータの生成
 	model_ = Model::Create();
 
@@ -29,6 +31,12 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	// 自キャラの初期化
 	player_->Initialize(model_, textureHandle_);
+
+	// 敵の生成
+	enemy_ = new Enemy();
+	Vector3 enemyPosition = {0.0f, 2.0f, 2.0f};
+	// 敵の初期化
+	enemy_->Initialize(model_, enemyPosition);
 }
 
 void GameScene::Update() {
@@ -52,6 +60,9 @@ void GameScene::Update() {
 
 	// プレイヤーの更新
 	player_->Update();
+
+	// 敵の更新
+	enemy_->Update();
 }
 
 void GameScene::Draw() {
@@ -60,6 +71,9 @@ void GameScene::Draw() {
 
 	// プレイヤーの描画
 	player_->Draw(camera_);
+
+	// 敵の描画
+	enemy_->Draw(camera_);
 
 	Model::PostDraw();
 }
