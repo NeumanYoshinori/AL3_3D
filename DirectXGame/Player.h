@@ -7,6 +7,9 @@ class Math;
 // 自キャラ
 class Player {
 public:
+	 // デストラクタ
+	~Player();
+
 	// 初期化
 	void Initialize(KamataEngine::Model* model, uint32_t texturehandle);
 
@@ -36,5 +39,5 @@ private:
 	Math* math_ = nullptr;
 
 	// 弾
-	PlayerBullet* bullet_ = nullptr;
+	std::list<PlayerBullet*> bullets_;
 };
