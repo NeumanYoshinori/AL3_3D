@@ -41,7 +41,7 @@ void Player::Update() {
 
 	// プレイヤー旋回処理
 	// キャラクターの移動ベクトル
-	Vector3 move = {0, 0, 0};
+	Vector3 move = {0.0f, 0.0f, 0.0f};
 
 	// キャラクターの移動速さ
 	const float kCharacterSpeed = 0.2f;

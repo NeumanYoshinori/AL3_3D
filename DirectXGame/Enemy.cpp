@@ -20,8 +20,38 @@ void Enemy::Initialize(Model* model, const Vector3& position) {
 }
 
 void Enemy::Update() {
-	worldTransform_.translation_.z -= 0.1f;
+	switch (phase_) {
+	case Phase::Approach:
+		// 接近フェーズの更新
+		Approach();
+		break;
+	case Phase::Leave:
+		// 離脱フェーズの更新
+		Leave();
+		break;
+	}
+
+	// ワールドトランスフォーム更新
 	math_->WorldTransformUpdate(worldTransform_);
+
+	// キャラクターの座標を画面表示する処理
+	ImGui::Begin(" ");
+	ImGui::DragFloat3("Enemy", &worldTransform_.translation_.x, 0.01f);
+	ImGui::End();
+}
+
+void Enemy::Approach() {
+	// 移動（ベクトルを加算）
+	worldTransform_.translation_ += kApproachSpeed;
+	// 特定の位置に到達したら離脱
+	if (worldTransform_.translation_.z < 0.0f) {
+		phase_ = Phase::Leave;
+	}
+}
+
+void Enemy::Leave() {
+	// 移動（ベクトルを加算）
+	worldTransform_.translation_ += kLeaveSpeed;
 }
 
 void Enemy::Draw(const Camera& camera) {
