@@ -19,15 +19,8 @@ void Enemy::Initialize(Model* model, const Vector3& position) {
 	worldTransform_.translation_ = position;
 }
 
-// staticで宣言したメンバ関数ポインタテーブルの実体
-void (Enemy::*Enemy::spFuncPhaseTable[])() = {
-    &Enemy::Approach, // 要素番号0
-    &Enemy::Leave     // 要素番号1
-};
-
 void Enemy::Update() {
-	// メンバ関数ポインタに入っている関数を呼び出す
-	(this->*spFuncPhaseTable[static_cast<size_t>(phase_)])();
+	state->Update(this);
 
 	// ワールドトランスフォーム更新
 	math_->WorldTransformUpdate(worldTransform_);
@@ -38,21 +31,28 @@ void Enemy::Update() {
 	ImGui::End();
 }
 
-void Enemy::Approach() {
-	// 移動（ベクトルを加算）
-	worldTransform_.translation_ += kApproachSpeed;
-	// 特定の位置に到達したら離脱
-	if (worldTransform_.translation_.z < 0.0f) {
-		phase_ = Phase::Leave;
-	}
+void Enemy::ChangeState(BaseEnemyState* newState) {
+	delete state;
+	state = newState;
 }
 
-void Enemy::Leave() {
-	// 移動（ベクトルを加算）
-	worldTransform_.translation_ += kLeaveSpeed;
-}
+void Enemy::MoveEnemy(Vector3 kSpeed) { worldTransform_.translation_ += kSpeed; }
 
 void Enemy::Draw(const Camera& camera) {
 	// モデルの描画
 	model_->Draw(worldTransform_, camera, textureHandle_);
+}
+
+void EnemyStateApproach::Update(Enemy* pEnemy) {
+	// 移動（ベクトルを加算）
+	pEnemy->MoveEnemy(kApproachSpeed);
+	// 特定の位置に到達したら離脱
+	if (pEnemy->GetTranslation().z < 0.0f) {
+		pEnemy->ChangeState(new EnemyStateLeave());
+	}
+}
+void EnemyStateLeave::Update(Enemy* pEnemy) {
+	// 移動（ベクトルを加算）
+	pEnemy->MoveEnemy(kLeaveSpeed);
+	pEnemy->ChangeState(new EnemyStateApproach());
 }
