@@ -37,6 +37,8 @@ void GameScene::Initialize() {
 	Vector3 enemyPosition = {5.0f, 4.0f, 4.0f};
 	// 敵の初期化
 	enemy_->Initialize(model_, enemyPosition);
+	// 敵キャラに自キャラのアドレスを渡す
+	enemy_->SetPlayer(player_);
 }
 
 void GameScene::Update() {

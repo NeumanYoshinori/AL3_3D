@@ -2,7 +2,11 @@
 #include <KamataEngine.h>
 #include "EnemyBullet.h"
 
+// 数学クラスの前方宣言
 class Math;
+
+// 自機クラスの前方宣言
+class Player;
 
 // 敵
 class Enemy {
@@ -37,6 +41,11 @@ public:
 	// 描画
 	void Draw(const KamataEngine::Camera& camera);
 
+	void SetPlayer(Player* player) { player_ = player; }
+
+	// ワールド座標の取得
+	KamataEngine::Vector3 GetWorldPosition();
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -69,4 +78,7 @@ private:
 
 	// 発射タイマー
 	int32_t fireTimer = 0;
+
+	// 自キャラ
+	Player* player_ = nullptr;
 };

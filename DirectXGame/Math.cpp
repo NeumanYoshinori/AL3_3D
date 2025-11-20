@@ -71,9 +71,33 @@ Vector3 Math::TransformNormal(const Vector3& v, const Matrix4x4& m) {
 	return result;
 }
 
+// 長さ(ノルム)
+float Math::Length(const Vector3& v) {
+	float result = sqrtf(powf(v.x, 2) + powf(v.y, 2) + powf(v.z, 2));
+
+	return result;
+}
+
+// 正規化
+Vector3 Math::Normalize(const Vector3& v) {
+	float len = Length(v);
+	Vector3 result = {};
+
+	result.x = v.x / len;
+	result.y = v.y / len;
+	result.z = v.z / len;
+
+	return result;
+}
+
 const Vector3 operator+(const Vector3& v1, const Vector3& v2) {
 	Vector3 temp(v1);
 	return temp += v2;
+}
+
+const Vector3 operator-(const KamataEngine::Vector3& v1, const KamataEngine::Vector3& v2) {
+	Vector3 temp(v1);
+	return temp -= v2;
 }
 
 const Vector3 operator*(const Vector3& v1, const float f) {
@@ -128,3 +152,6 @@ Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) {
 
 	return result *= m2;
 }
+
+Vector3 operator+(const Vector3& v) { return v; }
+Vector3 operator-(const Vector3& v) { return Vector3(-v.x, -v.y, -v.z); }

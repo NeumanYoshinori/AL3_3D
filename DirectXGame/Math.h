@@ -2,6 +2,7 @@
 #include <KamataEngine.h>
 
 const KamataEngine::Vector3 operator+(const KamataEngine::Vector3& v1, const KamataEngine::Vector3& v2);
+const KamataEngine::Vector3 operator-(const KamataEngine::Vector3& v1, const KamataEngine::Vector3& v2);
 
 const KamataEngine::Vector3 operator*(const KamataEngine::Vector3& v1, const float f);
 
@@ -37,4 +38,8 @@ public:
 	void WorldTransformUpdate(KamataEngine::WorldTransform& worldTransform);
 	// ベクトル変換
 	KamataEngine::Vector3 TransformNormal(const KamataEngine::Vector3& v, const KamataEngine::Matrix4x4& m);
+	// 長さ（ノルム)
+	float Length(const KamataEngine::Vector3& v);
+	// 正規化
+	KamataEngine::Vector3 Normalize(const KamataEngine::Vector3& v);
 };

@@ -1,5 +1,7 @@
 #include "Enemy.h"
 #include "Math.h"
+#include <cassert>
+#include "Player.h"
 
 using namespace KamataEngine;
 
@@ -73,10 +75,6 @@ void Enemy::ApproachInitialize() {
 void Enemy::Approach() {
 	// 移動（ベクトルを加算）
 	worldTransform_.translation_ += kApproachSpeed;
-	// 特定の位置に到達したら離脱
-	/*if (worldTransform_.translation_.z < 0.0f) {
-	    isDead_ = true;
-	}*/
 	// 発射タイマーカウントダウン
 	fireTimer--;
 	// 指定時間に達した
@@ -94,19 +92,24 @@ void Enemy::Leave() {
 }
 
 void Enemy::Fire() {
-	// 自キャラの座標をコピー
-	Vector3 position = worldTransform_.translation_;
-
-	// 弾の速度
-	const float kBulletSpeed = -1.0f;
-	Vector3 velocity(0, 0, kBulletSpeed);
-
-	// 速度ベクトルを自機の向きに合わせて回転させる
-	velocity = math_->TransformNormal(velocity, worldTransform_.matWorld_);
+	// 弾の速さ
+	const float kBulletSpeed = 2.0f;
+	Vector3 velocity = {};
+	
+	// 自キャラのワールド座標を取得する
+	Vector3 playerPos = player_->GetWorldPosition();
+	// 敵キャラのワールド座標を取得する
+	Vector3 enemyPos = GetWorldPosition();
+	// 敵キャラから自キャラへの差分ベクトルを求める
+	Vector3 e2p = playerPos - enemyPos;
+	// ベクトルの正規化
+	Vector3 normalizedE2p = math_->Normalize(e2p);
+	// ベクトルの長さを、速さに合わせる
+	velocity += normalizedE2p * kBulletSpeed;
 
 	// 弾を生成し、初期化
 	EnemyBullet* newBullet = new EnemyBullet();
-	newBullet->Initialize(model_, position, velocity);
+	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
 	// 弾を登録する
 	bullets_.push_back(newBullet);
@@ -120,4 +123,13 @@ void Enemy::Draw(const Camera& camera) {
 	for (EnemyBullet* bullet : bullets_) {
 		bullet->Draw(camera);
 	}
+}
+
+Vector3 Enemy::GetWorldPosition() {
+	Vector3 worldPos;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
 }
