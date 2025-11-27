@@ -1,6 +1,8 @@
 #include "Math.h"
+#include <algorithm>
 
 using namespace KamataEngine;
+using namespace std;
 
 // 拡大縮小行列
 Matrix4x4 Math::MakeScaleMatrix(const Vector3& scale) {
@@ -105,12 +107,52 @@ Vector3 Math::Transform(const Vector3& vector, const Matrix4x4& matrix4x4) {
 	return result;
 }
 
+// 内積
+float Math::Dot(const Vector3& v1, const Vector3& v2) {
+	float result = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+
+	return result;
+}
+
+// 線形補間(Vector3)
+Vector3 Math::Lerp(const Vector3& a, const Vector3& b, float t) {
+	Vector3 result = {};
+	result.x = (1.0f - t) * a.x + t * b.x;
+	result.y = (1.0f - t) * a.y + t * b.y;
+	result.z = (1.0f - t) * a.z + t * b.z;
+
+	return result;
+}
+
+Vector3 Math::Slerp(const Vector3& v1, const Vector3& v2, float t) {
+	Vector3 nv1 = Normalize(v1);
+	Vector3 nv2 = Normalize(v2);
+
+	float dot = Dot(nv1, nv2);
+
+	dot = clamp(dot, -1.0f, 1.0f);
+
+	float theta = acosf(dot);
+
+	// ほぼ同じ方向のときは Lerp に切り替え
+	if (fabs(theta) < 1e-5f) {
+		return nv1;
+	}
+
+	float sinTheta = sinf(theta);
+
+	float w1 = sinf(1.0f - t) * theta / sinTheta;
+	float w2 = sinf(t * theta) / sinTheta;
+
+	return nv1 * w1 + nv2 * w2;
+}
+
 const Vector3 operator+(const Vector3& v1, const Vector3& v2) {
 	Vector3 temp(v1);
 	return temp += v2;
 }
 
-const Vector3 operator-(const KamataEngine::Vector3& v1, const KamataEngine::Vector3& v2) {
+const Vector3 operator-(const Vector3& v1, const Vector3& v2) {
 	Vector3 temp(v1);
 	return temp -= v2;
 }

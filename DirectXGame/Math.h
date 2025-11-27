@@ -44,4 +44,9 @@ public:
 	KamataEngine::Vector3 Normalize(const KamataEngine::Vector3& v);
 	// 座標変換
 	KamataEngine::Vector3 Transform(const KamataEngine::Vector3& vector, const KamataEngine::Matrix4x4& matrix4x4);
+	float Dot(const KamataEngine::Vector3& v1, const KamataEngine::Vector3& v2);
+	// 線形補間
+	KamataEngine::Vector3 Lerp(const KamataEngine::Vector3& a, const KamataEngine::Vector3& b, float t);
+	// 球面線形補間
+	KamataEngine::Vector3 Slerp(const KamataEngine::Vector3& v1, const KamataEngine::Vector3& v2, float t);
 };

@@ -3,6 +3,8 @@
 
 class Math;
 
+class Player;
+
 // 敵の弾
 class EnemyBullet {
 public:
@@ -16,6 +18,10 @@ public:
 	void Draw(const KamataEngine::Camera& camera);
 
 	bool IsDead() const { return isDead_; }
+
+	void SetPlayer(Player* player) { player_ = player; }
+
+	KamataEngine::Vector3 GetWorldPosition();
 
 private:
 	// ワールド変換データ
@@ -40,4 +46,10 @@ private:
 	int32_t deathTimer_ = kLifeTime;
 	// デスフラグ
 	bool isDead_ = false;
+
+	Player* player_ = nullptr;
+
+	const float kBulletSpeed = 0.2f;
+
+	float t = 0.2f;
 };

@@ -133,9 +133,9 @@ void Player::Attack() {
 	}
 }
 
-KamataEngine::Vector3 Player::GetWorldPosition() {
+Vector3 Player::GetWorldPosition() {
 	// ワールド座標を入れる変数
-	Vector3 worldPos;
+	Vector3 worldPos = {};
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];

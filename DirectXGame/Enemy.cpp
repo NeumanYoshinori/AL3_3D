@@ -27,9 +27,6 @@ void Enemy::Initialize(Model* model, const Vector3& position) {
 	// 引数で受け取った初期座標をセット
 	worldTransform_.translation_ = position;
 
-	// 弾を発射
-	//Fire();
-
 	// 接近フェーズ初期化
 	ApproachInitialize();
 }
@@ -74,7 +71,7 @@ void Enemy::ApproachInitialize() {
 
 void Enemy::Approach() {
 	// 移動（ベクトルを加算）
-	worldTransform_.translation_ += kApproachSpeed;
+	//worldTransform_.translation_ += kApproachSpeed;
 	// 発射タイマーカウントダウン
 	fireTimer--;
 	// 指定時間に達した
@@ -92,6 +89,8 @@ void Enemy::Leave() {
 }
 
 void Enemy::Fire() {
+	assert(player_);
+
 	// 弾の速さ
 	const float kBulletSpeed = 2.0f;
 	Vector3 velocity = {};
@@ -103,13 +102,14 @@ void Enemy::Fire() {
 	// 敵キャラから自キャラへの差分ベクトルを求める
 	Vector3 e2p = playerPos - enemyPos;
 	// ベクトルの正規化
-	Vector3 normalizedE2p = math_->Normalize(e2p);
+	math_->Normalize(e2p);
 	// ベクトルの長さを、速さに合わせる
-	velocity += normalizedE2p * kBulletSpeed;
+	velocity = e2p * kBulletSpeed;
 
 	// 弾を生成し、初期化
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	newBullet->SetPlayer(player_);
 
 	// 弾を登録する
 	bullets_.push_back(newBullet);
