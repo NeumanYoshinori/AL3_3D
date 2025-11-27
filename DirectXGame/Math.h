@@ -42,4 +42,6 @@ public:
 	float Length(const KamataEngine::Vector3& v);
 	// 正規化
 	KamataEngine::Vector3 Normalize(const KamataEngine::Vector3& v);
+	// 座標変換
+	KamataEngine::Vector3 Transform(const KamataEngine::Vector3& vector, const KamataEngine::Matrix4x4& matrix4x4);
 };
