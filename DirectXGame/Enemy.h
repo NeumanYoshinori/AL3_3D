@@ -74,7 +74,7 @@ private:
 	std::list<EnemyBullet*> bullets_;
 
 	// 発射間隔
-	static const int kFireInterval = 60;
+	static const int kFireInterval = 200;
 
 	// 発射タイマー
 	int32_t fireTimer = 0;

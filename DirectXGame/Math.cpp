@@ -141,7 +141,7 @@ Vector3 Math::Slerp(const Vector3& v1, const Vector3& v2, float t) {
 
 	float sinTheta = sinf(theta);
 
-	float w1 = sinf(1.0f - t) * theta / sinTheta;
+	float w1 = sinf((1.0f - t) * theta) / sinTheta;
 	float w2 = sinf(t * theta) / sinTheta;
 
 	return nv1 * w1 + nv2 * w2;
