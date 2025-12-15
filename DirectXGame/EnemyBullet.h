@@ -1,8 +1,6 @@
 #pragma once
 #include <KamataEngine.h>
 
-class Math;
-
 class Player;
 
 // 敵の弾
@@ -17,10 +15,12 @@ public:
 	// 描画
 	void Draw(const KamataEngine::Camera& camera);
 
+	// デスフラグを取得
 	bool IsDead() const { return isDead_; }
 
 	void SetPlayer(Player* player) { player_ = player; }
 
+	// ワールド座標を取得
 	KamataEngine::Vector3 GetWorldPosition();
 
 	// 衝突を検出したら呼び出されるコールバック関数

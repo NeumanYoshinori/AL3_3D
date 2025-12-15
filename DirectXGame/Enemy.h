@@ -1,7 +1,6 @@
 #pragma once
 #include <KamataEngine.h>
 #include "EnemyBullet.h"
-#include "Math.h"
 
 // 自機クラスの前方宣言
 class Player;
@@ -49,6 +48,9 @@ public:
 
 	// 弾リストを取得
 	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+	
+	// 半径を取得
+	float GetRadius() const { return radius; }
 
 private:
 	// ワールド変換データ
@@ -82,4 +84,7 @@ private:
 
 	// 自キャラ
 	Player* player_ = nullptr;
+
+	// 半径
+	float radius = 0.5f;
 };

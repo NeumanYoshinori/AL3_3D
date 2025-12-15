@@ -1,7 +1,6 @@
 #pragma once
 #include "KamataEngine.h"
 #include "PlayerBullet.h"
-#include "Math.h"
 
 // 自キャラ
 class Player {

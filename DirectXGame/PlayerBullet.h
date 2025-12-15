@@ -15,10 +15,17 @@ public:
 	// 描画
 	void Draw(const KamataEngine::Camera& camera);
 
+	// デスフラグを取得
 	bool IsDead() const { return isDead_; }
+
+	// ワールド座標を取得
+	KamataEngine::Vector3 GetWorldPosition();
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
+
+	// 半径を取得
+	float GetRadius() const { return radius; }
 
 private:
 	// ワールド変換データ
@@ -40,4 +47,7 @@ private:
 	int32_t deathTimer_ = kLifeTime;
 	// デスフラグ
 	bool isDead_ = false;
+
+	// 半径
+	float radius = 0.5f;
 };

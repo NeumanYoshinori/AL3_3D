@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include "Math.h"
 
 using namespace KamataEngine;
 using namespace std;
@@ -89,7 +90,7 @@ void GameScene::CheckAllCollisions() {
 	Vector3 posA, posB;
 
 	// 自弾リストの取得
-	//const list<PlayerBullet*>& playerBullets = player_->GetBullets();
+	const list<PlayerBullet*>& playerBullets = player_->GetBullets();
 	// 敵弾リストの取得
 	const list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
 
@@ -115,8 +116,45 @@ void GameScene::CheckAllCollisions() {
 	#pragma endregion
 
 	#pragma region 自弾と敵キャラの当たり判定
+	// 敵キャラの座標
+	posA = enemy_->GetWorldPosition();
+
+	// 自キャラと敵弾全ての当たり判定
+	for (PlayerBullet* bullet : playerBullets) {
+		// 敵弾の座標
+		posB = bullet->GetWorldPosition();
+
+		// 座標Aと座標Bの距離を求める
+		float playerBulletToEnemy = Length(posA - posB);
+		// 球と球の交差判定
+		if (playerBulletToEnemy <= bullet->GetRadius() + enemy_->GetRadius()) {
+			// 自弾の衝突時コールバックを呼び出す
+			bullet->OnCollision();
+			// 敵の衝突時コールバックを呼び出す
+			enemy_->OnCollision();
+		}
+	}
 	#pragma endregion
 
 	#pragma region 自弾と敵弾の当たり判定
+	// 自キャラと敵弾全ての当たり判定
+	for (PlayerBullet* playerBullet : playerBullets) {
+		// 自弾の座標
+		posA = playerBullet->GetWorldPosition();
+
+		for (EnemyBullet* enemyBullet : enemyBullets) {
+			// 敵弾の座標
+			posB = enemyBullet->GetWorldPosition();
+			// 座標Aと座標Bの距離を求める
+			float playerBulletToEnemyBullet = Length(posB - posA);
+			// 球と球の交差判定
+			if (playerBulletToEnemyBullet <= playerBullet->GetRadius() + enemyBullet->GetRadius()) {
+				// 自弾の衝突時コールバックを呼び出す
+				playerBullet->OnCollision();
+				// 敵の衝突時コールバックを呼び出す
+				enemyBullet->OnCollision();
+			}
+		}
+	}
 	#pragma endregion
 }
