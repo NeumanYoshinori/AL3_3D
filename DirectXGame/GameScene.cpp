@@ -13,6 +13,10 @@ GameScene::~GameScene() {
 
 	// デバッグカメラの更新
 	delete debugCamera_;
+
+	// 天球の解放
+	delete skydome_;
+	delete modelSkydome_;
 }
 
 void GameScene::Initialize() {
@@ -24,10 +28,19 @@ void GameScene::Initialize() {
 	// 3Dモデルデータの生成
 	model_ = Model::Create();
 
+	// カメラのfarZを適度に大きい値に変更する
+	camera_.farZ = 560.0f;
 	// カメラの初期化
 	camera_.Initialize();
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1980, 1080);
+
+	// 3Dモデルの生成
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	// 天球の生成
+	skydome_ = new Skydome();
+	// 天球の初期化
+	skydome_->Initialize(modelSkydome_, &camera_);
 
 	// 自キャラの生成
 	player_ = new Player();
@@ -62,6 +75,9 @@ void GameScene::Update() {
 		camera_.UpdateMatrix();
 	}
 
+	// 天球の更新
+	skydome_->Update();
+
 	// プレイヤーの更新
 	player_->Update();
 
@@ -75,6 +91,9 @@ void GameScene::Update() {
 void GameScene::Draw() {
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 	Model::PreDraw(dxCommon->GetCommandList());
+
+	// 天球の描画
+	skydome_->Draw();
 
 	// プレイヤーの描画
 	player_->Draw(camera_);
