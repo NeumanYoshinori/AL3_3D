@@ -56,7 +56,7 @@ void Enemy::Update() {
 	}
 
 	// ワールドトランスフォーム更新
-	math_->WorldTransformUpdate(worldTransform_);
+	WorldTransformUpdate(worldTransform_);
 
 	// キャラクターの座標を画面表示する処理
 	ImGui::Begin(" ");
@@ -102,7 +102,7 @@ void Enemy::Fire() {
 	// 敵キャラから自キャラへの差分ベクトルを求める
 	Vector3 e2p = playerPos - enemyPos;
 	// ベクトルの正規化
-	math_->Normalize(e2p);
+	Normalize(e2p);
 	// ベクトルの長さを、速さに合わせる
 	velocity = e2p * kBulletSpeed;
 

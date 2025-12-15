@@ -33,7 +33,7 @@ void PlayerBullet::Update() {
 	}
 	
 	// ワールドトランスフォームの更新
-	math_->WorldTransformUpdate(worldTransform_);
+	WorldTransformUpdate(worldTransform_);
 }
 
 void PlayerBullet::Draw(const KamataEngine::Camera& camera) {
