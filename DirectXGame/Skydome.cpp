@@ -7,6 +7,7 @@ void Skydome::Initialize(Model* model, Camera* camera) {
 	// NULLポインタチェック
 	assert(model);
 
+	// モデル
 	model_ = model;
 
 	// ワールドトランスフォームの初期化
