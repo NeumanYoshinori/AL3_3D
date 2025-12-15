@@ -40,3 +40,8 @@ void PlayerBullet::Draw(const KamataEngine::Camera& camera) {
 	// モデルの描画
 	model_->Draw(worldTransform_, camera, textureHandle_);
 }
+
+void PlayerBullet::OnCollision() {
+	// デスフラグを立てる
+	isDead_ = true;
+}

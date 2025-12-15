@@ -16,6 +16,9 @@ public:
 	// 描画
 	void Draw();
 
+	// 衝突判定と応答
+	void CheckAllCollisions();
+
 private:
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;

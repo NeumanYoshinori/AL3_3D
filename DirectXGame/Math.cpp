@@ -8,7 +8,7 @@ using namespace std;
 float Dot(const Vector3& v1, const Vector3& v2) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
 
 // 長さ(ノルム)
-float Length(const Vector3& v) { return sqrtf(powf(v.x, 2) + powf(v.y, 2) + powf(v.z, 2)); }
+float Length(const Vector3& v) { return sqrtf(powf(v.x, 2.0f) + powf(v.y, 2.0f) + powf(v.z, 2.0f)); }
 
 // 線形補間
 float Lerp(float a, float b, float t) { return a + (b - a) * t; };

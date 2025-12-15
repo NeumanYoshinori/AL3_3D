@@ -1,9 +1,7 @@
 #pragma once
 #include <KamataEngine.h>
 #include "EnemyBullet.h"
-
-// 数学クラスの前方宣言
-class Math;
+#include "Math.h"
 
 // 自機クラスの前方宣言
 class Player;
@@ -46,6 +44,12 @@ public:
 	// ワールド座標の取得
 	KamataEngine::Vector3 GetWorldPosition();
 
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+	// 弾リストを取得
+	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -55,9 +59,6 @@ private:
 
 	// テクスチャハンドル
 	uint32_t textureHandle_;
-
-	// 数学関数
-	Math* math_ = nullptr;
 
 	// フェーズ
 	Phase phase_ = Phase::Approach;

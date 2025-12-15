@@ -23,6 +23,12 @@ public:
 
 	KamataEngine::Vector3 GetWorldPosition();
 
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+	// 半径を取得
+	float GetRadius() const { return radius; }
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -32,9 +38,6 @@ private:
 
 	// テクスチャハンドル
 	uint32_t textureHandle_;
-
-	// 数学関数
-	Math* math_ = nullptr;
 
 	// 速度
 	KamataEngine::Vector3 velocity_;
@@ -52,4 +55,6 @@ private:
 	const float kBulletSpeed = 0.2f;
 
 	float t = 0.2f;
+
+	float radius = 1.5f;
 };

@@ -1,8 +1,7 @@
 #pragma once
 #include "KamataEngine.h"
 #include "PlayerBullet.h"
-
-class Math;
+#include "Math.h"
 
 // 自キャラ
 class Player {
@@ -28,6 +27,15 @@ public:
 	// ワールド座標を取得
 	KamataEngine::Vector3 GetWorldPosition();
 
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+	// 弾リストを取得
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
+
+	// 半径を取得
+	float GetRadius() const { return radius; }
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -38,9 +46,8 @@ private:
 	// シングルトンインスタンスを取得する
 	KamataEngine::Input* input_ = KamataEngine::Input::GetInstance();
 
-	// 数学関数
-	Math* math_ = nullptr;
-
 	// 弾
 	std::list<PlayerBullet*> bullets_;
+
+	float radius = 0.5f;
 };

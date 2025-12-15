@@ -13,22 +13,22 @@ float Lerp(float a, float b, float t);
 const KamataEngine::Vector3 operator+(const KamataEngine::Vector3& v1, const KamataEngine::Vector3& v2);
 const KamataEngine::Vector3 operator-(const KamataEngine::Vector3& v1, const KamataEngine::Vector3& v2);
 
-const KamataEngine::Vector3 operator*(const KamataEngine::Vector3& v, const float f);
-const KamataEngine::Vector3 operator*(const float f, const KamataEngine::Vector3& v);
+// 単項演算子オーバーロード
+KamataEngine::Vector3 operator+(const KamataEngine::Vector3& v);
+KamataEngine::Vector3 operator-(const KamataEngine::Vector3& v);
 
+// Vector3 * float
+const KamataEngine::Vector3 operator*(const KamataEngine::Vector3& v, const float f);
+// float * Vector3
+const KamataEngine::Vector3 operator*(const float f, const KamataEngine::Vector3& v);
+// Vector3 * float
+const KamataEngine::Vector3 operator/(const KamataEngine::Vector3& v, float f);
+
+// 代入演算子オーバーロード
 KamataEngine::Vector3& operator+=(KamataEngine::Vector3& lhv, const KamataEngine::Vector3& rhv);
 KamataEngine::Vector3& operator-=(KamataEngine::Vector3& lhv, const KamataEngine::Vector3& rhv);
 KamataEngine::Vector3& operator*=(KamataEngine::Vector3& v, float s);
 KamataEngine::Vector3& operator/=(KamataEngine::Vector3& v, float s);
-
-KamataEngine::Vector3 operator+(const KamataEngine::Vector3& v);
-KamataEngine::Vector3 operator-(const KamataEngine::Vector3& v);
-
-// Vector3 + float
-const KamataEngine::Vector3 operator+(const KamataEngine::Vector3& v, float f);
-
-// Vector3 - float
-const KamataEngine::Vector3 operator-(const KamataEngine::Vector3& v, float f);
 
 // ベクトル変換
 KamataEngine::Vector3 TransformNormal(const KamataEngine::Vector3& v, const KamataEngine::Matrix4x4& m);

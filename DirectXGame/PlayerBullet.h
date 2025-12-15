@@ -17,6 +17,9 @@ public:
 
 	bool IsDead() const { return isDead_; }
 
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -26,9 +29,6 @@ private:
 
 	// テクスチャハンドル
 	uint32_t textureHandle_;
-	
-	// 数学関数
-	Math* math_ = nullptr;
 
 	// 速度
 	KamataEngine::Vector3 velocity_;
