@@ -1,9 +1,10 @@
 #pragma once
-#include "KamataEngine.h"
+#include <KamataEngine.h>
 #include "PlayerBullet.h"
+#include "Collider.h"
 
 // 自キャラ
-class Player {
+class Player : public Collider {
 public:
 	 // デストラクタ
 	~Player();
@@ -22,18 +23,18 @@ public:
 
 	// 攻撃
 	void Attack();
-	
-	// ワールド座標を取得
-	KamataEngine::Vector3 GetWorldPosition();
 
-	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
+	// 衝突時に呼ばれる関数
+	KamataEngine::Vector3 GetWorldPosition() override;
+
+	// 衝突時に呼ばれる関数をオーバーライド
+	void OnCollision() override;
 
 	// 弾リストを取得
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 
 	// 半径を取得
-	float GetRadius() const { return radius; }
+	float GetRadius() override { return radius; }
 
 private:
 	// ワールド変換データ

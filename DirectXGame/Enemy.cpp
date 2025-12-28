@@ -136,4 +136,5 @@ Vector3 Enemy::GetWorldPosition() {
 
 void Enemy::OnCollision() {
 	// 何もしない
+	return;
 }

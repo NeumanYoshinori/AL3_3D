@@ -20,6 +20,9 @@ public:
 	// 衝突判定と応答
 	void CheckAllCollisions();
 
+	// コライダー2つの衝突判定と応答
+	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
+
 private:
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
@@ -31,6 +34,7 @@ private:
 
 	// 自キャラ
 	Player* player_ = nullptr;
+	float playerRadius = 0.5f;
 
 	// 敵
 	Enemy* enemy_ = nullptr;

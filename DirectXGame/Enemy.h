@@ -1,12 +1,13 @@
 #pragma once
 #include <KamataEngine.h>
 #include "EnemyBullet.h"
+#include "Collider.h"
 
 // 自機クラスの前方宣言
 class Player;
 
 // 敵
-class Enemy {
+class Enemy : public Collider {
 public:
 	// 行動フェーズ
 	enum class Phase {
@@ -41,16 +42,16 @@ public:
 	void SetPlayer(Player* player) { player_ = player; }
 
 	// ワールド座標の取得
-	KamataEngine::Vector3 GetWorldPosition();
+	KamataEngine::Vector3 GetWorldPosition() override;
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
+	void OnCollision() override;
 
 	// 弾リストを取得
 	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
 	
 	// 半径を取得
-	float GetRadius() const { return radius; }
+	float GetRadius() override { return radius; }
 
 private:
 	// ワールド変換データ

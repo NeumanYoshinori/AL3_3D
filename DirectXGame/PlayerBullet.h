@@ -1,10 +1,11 @@
 #pragma once
 #include <KamataEngine.h>
+#include "Collider.h"
 
 class Math;
 
 // 自キャラの弾
-class PlayerBullet {
+class PlayerBullet : public Collider {
 public:
 	// 初期化
 	void Initialize(KamataEngine::Model* model, const KamataEngine::Vector3& position, const KamataEngine::Vector3& velocity);
@@ -19,13 +20,13 @@ public:
 	bool IsDead() const { return isDead_; }
 
 	// ワールド座標を取得
-	KamataEngine::Vector3 GetWorldPosition();
+	KamataEngine::Vector3 GetWorldPosition() override;
 
 	// 衝突を検出したら呼び出されるコールバック関数
-	void OnCollision();
+	void OnCollision() override;
 
 	// 半径を取得
-	float GetRadius() const { return radius; }
+	float GetRadius() override { return radius; }
 
 private:
 	// ワールド変換データ
