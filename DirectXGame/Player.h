@@ -10,7 +10,7 @@ public:
 	~Player();
 
 	// 初期化
-	void Initialize(KamataEngine::Model* model, uint32_t texturehandle);
+	void Initialize(KamataEngine::Model* model, uint32_t texturehandle, const KamataEngine::Vector3& position);
 
 	// 更新
 	void Update();
@@ -36,6 +36,9 @@ public:
 	// 半径を取得
 	float GetRadius() override { return radius; }
 
+	// 親となるワールドトランスフォームをセット
+	void SetParent(const KamataEngine::WorldTransform* parent);
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -49,5 +52,6 @@ private:
 	// 弾
 	std::list<PlayerBullet*> bullets_;
 
+	// 半径
 	float radius = 0.5f;
 };

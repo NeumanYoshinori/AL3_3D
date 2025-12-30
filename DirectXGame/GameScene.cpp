@@ -17,6 +17,9 @@ GameScene::~GameScene() {
 	// 天球の解放
 	delete skydome_;
 	delete modelSkydome_;
+
+	// レールカメラコントローラーの解放
+	delete railCamera_;
 }
 
 void GameScene::Initialize() {
@@ -42,10 +45,18 @@ void GameScene::Initialize() {
 	// 天球の初期化
 	skydome_->Initialize(modelSkydome_, &camera_);
 
+	// レールカメラの生成
+	railCamera_ = new RailCameraController();
+	// レールカメラの初期化
+	railCamera_->Initialize(railCameraPos, railCameraAngle);
+
 	// 自キャラの生成
 	player_ = new Player();
+	Vector3 playerPosition(0, 0, 40.0f);
 	// 自キャラの初期化
-	player_->Initialize(model_, textureHandle_);
+	player_->Initialize(model_, textureHandle_, playerPosition);
+	// 自キャラとレールカメラの親子関係を結ぶ
+	player_->SetParent(&railCamera_->GetWorldTransform());
 
 	// 敵の生成
 	enemy_ = new Enemy();
@@ -55,7 +66,7 @@ void GameScene::Initialize() {
 	// 敵キャラに自キャラのアドレスを渡す
 	enemy_->SetPlayer(player_);
 }
-
+	
 void GameScene::Update() {
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_RETURN)) {
@@ -83,6 +94,12 @@ void GameScene::Update() {
 
 	// 敵の更新
 	enemy_->Update();
+
+	// レールカメラの更新
+	railCamera_->Update();
+	camera_.matView = railCamera_->GetCamera()->matView;
+	camera_.matProjection = railCamera_->GetCamera()->matProjection;
+	camera_.TransferMatrix();
 
 	// 衝突判定と応答
 	CheckAllCollisions();

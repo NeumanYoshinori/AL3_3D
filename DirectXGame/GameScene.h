@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Skydome.h"
+#include "RailCameraController.h"
 
 class GameScene {
 public:
@@ -53,4 +54,10 @@ private:
 	Skydome* skydome_ = nullptr;
 	// 3Dモデル
 	KamataEngine::Model* modelSkydome_ = nullptr;
+
+	// レールカメラ
+	RailCameraController* railCamera_ = nullptr;
+
+	KamataEngine::Vector3 railCameraPos = {0.0f};
+	KamataEngine::Vector3 railCameraAngle = {0.0f};
 };

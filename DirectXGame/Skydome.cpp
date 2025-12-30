@@ -10,9 +10,10 @@ void Skydome::Initialize(Model* model, Camera* camera) {
 	// モデル
 	model_ = model;
 
-	// ワールドトランスフォームの初期化
+	// ワールド変換データの初期化
 	worldTransform_.Initialize();
 
+	// カメラ
 	camera_ = camera;
 }
 

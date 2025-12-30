@@ -28,6 +28,9 @@ public:
 	// 半径を取得
 	float GetRadius() override { return radius; }
 
+	// 親となるワールドトランスフォームをセット
+	void SetParent(const KamataEngine::WorldTransform* parent);
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;

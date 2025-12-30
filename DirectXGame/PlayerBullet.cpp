@@ -55,3 +55,8 @@ void PlayerBullet::OnCollision() {
 	// デスフラグを立てる
 	isDead_ = true;
 }
+
+void PlayerBullet::SetParent(const WorldTransform* parent) {
+	// 親子関係を結ぶ
+	worldTransform_.parent_ = parent;
+}

@@ -59,6 +59,8 @@ KamataEngine::Matrix4x4 MakeRotateZMatrix(float theta);
 KamataEngine::Matrix4x4 MakeTranslateMatrix(const KamataEngine::Vector3& translate);
 // アフィン変換行列の作成
 KamataEngine::Matrix4x4 MakeAffineMatrix(const KamataEngine::Vector3& scale, const KamataEngine::Vector3& rot, const KamataEngine::Vector3& translate);
+// 逆行列
+KamataEngine::Matrix4x4 Inverse(const KamataEngine::Matrix4x4& m);
 
 // ワールド変換
 void WorldTransformUpdate(KamataEngine::WorldTransform& worldTransform);

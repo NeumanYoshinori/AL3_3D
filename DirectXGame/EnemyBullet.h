@@ -57,5 +57,6 @@ private:
 
 	float t = 0.2f;
 
+	// 半径
 	float radius = 1.5f;
 };
