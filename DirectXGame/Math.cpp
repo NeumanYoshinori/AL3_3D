@@ -1,5 +1,6 @@
 #include "Math.h"
 #include <algorithm>
+#include <cassert>
 
 using namespace KamataEngine;
 using namespace std;
@@ -136,6 +137,65 @@ Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t) {
 
 	// 長さを反映
 	return length * npVector;
+}
+
+Vector3 CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
+	const float s = 0.5f; // 数式に出てくる1/2のこと
+
+	float t2 = t * t;  // tの2乗
+	float t3 = t2 * t; // tの3乗
+
+	Vector3 e3 = -p0 + 3 * p1 - 3 * p2 + p3;
+	Vector3 e2 = 2 * p0 - 5 * p1 + 4 * p2 - p3;
+	Vector3 e1 = -p0 + p2;
+	Vector3 e0 = 2 * p1;
+
+	return s * (e3 * t3 + e2 * t2 + e1 * t + e0);
+}
+
+Vector3 CatmullRomPosition(const vector<Vector3>& points, float t) {
+	assert(points.size() >= 4 && "制御点は4点以上必要です");
+
+	// 区間数は制御点の数-1
+	size_t division = points.size() - 1;
+	// 1区間の長さ（全体ンを1.0とした割合）
+	float areaWidth = 1.0f / division;
+
+	// 区間番号
+	size_t index = static_cast<size_t>(t / areaWidth);
+
+	// 区間番号が上限を超えないように収める
+	index = min(index, points.size() - 2);
+
+	// 区間内の支店を0.0、終点を1.0fとしたときの現在位置
+	float t_2 = t - areaWidth * index;
+	// 加減(0.0f)と上限(1.0f)の範囲を収める
+	t_2 = clamp(t_2, 0.0f, 1.0f);
+
+	// 4点分のインデックス
+	size_t index0 = index - 1;
+	size_t index1 = index;
+	size_t index2 = index + 1;
+	size_t index3 = index + 2;
+
+	// 最初の区間のp0はp1を重複使用する
+	if (index == 0) {
+		index0 = index1;
+	}
+
+	// 最後の区間のp3はp2を重複使用する
+	if (index3 >= points.size()) {
+		index3 = index2;
+	}
+
+	// 4点の座標
+	const Vector3& p0 = points[index0];
+	const Vector3& p1 = points[index1];
+	const Vector3& p2 = points[index2];
+	const Vector3& p3 = points[index3];
+
+	// 4点を指定してCatmul-Rom補間
+	return CatmullRomInterpolation(p0, p1, p2, p3, t_2);
 }
 
 Matrix4x4& operator*=(Matrix4x4& lhm, const Matrix4x4& rhm) {

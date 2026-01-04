@@ -3,6 +3,7 @@
 #include <Imgui.h>
 
 using namespace KamataEngine;
+using namespace std;
 
 void RailCameraController::Initialize(const Vector3& position, const Vector3& radian) {
 	// ワールドトランスフォームの初期設定
@@ -29,4 +30,23 @@ void RailCameraController::Update() {
 	ImGui::SliderFloat3("translation", &worldTransform_.translation_.x, 0.0f, 1.0f);
 	ImGui::SliderFloat3("rotation", &worldTransform_.rotation_.x, 0.0f, 1.0f);
 	ImGui::End();
+}
+
+void RailCameraController::Draw() {
+	// 線分で描画する用の頂点リスト
+	vector<Vector3> pointsDrawing;
+	// 線分の数
+	const size_t segmentCount = 100;
+	// 線分の数+1個分の頂点座標を計算
+	for (size_t i = 0; i < segmentCount + 1; i++) {
+		float t = 1.0f / segmentCount * i;
+		Vector3 pos = CatmullRomPosition(controlPoints_, t);
+		// 描画用頂点リストに追加
+		pointsDrawing.push_back(pos);
+	}
+
+	PrimitiveDrawer::GetInstance()->SetCamera(camera_);
+	for (int i = 0; i < segmentCount; i++) {
+		PrimitiveDrawer::GetInstance()->DrawLine3d(pointsDrawing[i], pointsDrawing[i + 1], Vector4{1.0f, 0.0f, 0.0f, 1.0f});
+	}
 }

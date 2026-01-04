@@ -41,6 +41,12 @@ KamataEngine::Vector3 Lerp(const KamataEngine::Vector3& a, const KamataEngine::V
 // 球面線形補間
 KamataEngine::Vector3 Slerp(const KamataEngine::Vector3& v1, const KamataEngine::Vector3& v2, float t);
 
+// CatmulRom補間
+KamataEngine::Vector3 CatmullRomInterpolation(const KamataEngine::Vector3& p0, const KamataEngine::Vector3& p1, const KamataEngine::Vector3& p2, const KamataEngine::Vector3& p3, float t);
+
+// CatmullRomスプライン曲線上の座標を得る
+KamataEngine::Vector3 CatmullRomPosition(const std::vector<KamataEngine::Vector3>& points, float t);
+
 // 代入演算子オーバーロード
 KamataEngine::Matrix4x4& operator*=(KamataEngine::Matrix4x4& lhm, const KamataEngine::Matrix4x4& rhm);
 

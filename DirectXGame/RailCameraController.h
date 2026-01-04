@@ -1,5 +1,6 @@
 #pragma once
 #include <KamataEngine.h>
+#include <vector>
 
 class RailCameraController {
 public:
@@ -12,6 +13,11 @@ public:
 	/// 更新
 	/// </summary>
 	void Update();
+
+	/// <summary>
+	/// 描画
+	/// </summary>
+	void Draw();
 
 	// カメラを取得
 	KamataEngine::Camera* GetCamera() { return camera_; }
@@ -26,7 +32,16 @@ private:
 	KamataEngine::Camera* camera_ = nullptr;
 
 	// 速度
-	KamataEngine::Vector3 velocity_ = {0.0f, 0.0f, -0.1f};
+	KamataEngine::Vector3 velocity_ = {0.0f, 0.0f, 0.1f};
 	// 角度
 	KamataEngine::Vector3 radian_ = {0.0f};
+
+	std::vector<KamataEngine::Vector3> controlPoints_ = {
+	    {0,  0,  0},
+        {10, 10, 0},
+        {10, 15, 0},
+        {20, 15, 0},
+        {20, 0,  0},
+        {30, 0,  0},
+	};
 };

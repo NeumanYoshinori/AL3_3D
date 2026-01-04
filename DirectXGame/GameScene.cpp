@@ -118,6 +118,9 @@ void GameScene::Draw() {
 	// 敵の描画
 	enemy_->Draw(camera_);
 
+	// レールカメラの描画
+	railCamera_->Draw();
+
 	Model::PostDraw();
 }
 
