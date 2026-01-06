@@ -50,13 +50,16 @@ void GameScene::Initialize() {
 	// レールカメラの初期化
 	railCamera_->Initialize(railCameraPos, railCameraAngle);
 
+	// レティクルのテクスチャ
+	TextureManager::Load("lockon.png");
+
 	// 自キャラの生成
 	player_ = new Player();
-	Vector3 playerPosition(0, 0, 40.0f);
+	Vector3 playerPosition(0, 0, -50.0f);
 	// 自キャラの初期化
-	player_->Initialize(model_, textureHandle_, playerPosition);
+	player_->Initialize(model_, textureHandle_, playerPosition, &camera_);
 	// 自キャラとレールカメラの親子関係を結ぶ
-	player_->SetParent(&railCamera_->GetWorldTransform());
+	//player_->SetParent(&railCamera_->GetWorldTransform());
 
 	// 敵の生成
 	enemy_ = new Enemy();
@@ -96,10 +99,10 @@ void GameScene::Update() {
 	enemy_->Update();
 
 	// レールカメラの更新
-	railCamera_->Update();
+	/*railCamera_->Update();
 	camera_.matView = railCamera_->GetCamera()->matView;
 	camera_.matProjection = railCamera_->GetCamera()->matProjection;
-	camera_.TransferMatrix();
+	camera_.TransferMatrix();*/
 
 	// 衝突判定と応答
 	CheckAllCollisions();
@@ -113,15 +116,22 @@ void GameScene::Draw() {
 	skydome_->Draw();
 
 	// プレイヤーの描画
-	player_->Draw(camera_);
+	player_->Draw();
 
 	// 敵の描画
 	enemy_->Draw(camera_);
 
 	// レールカメラの描画
-	railCamera_->Draw();
+	// railCamera_->Draw();
 
 	Model::PostDraw();
+
+	Sprite::PreDraw(dxCommon->GetCommandList());
+
+	// UIの描画
+	player_->DrawUI();
+
+	Sprite::PostDraw();
 }
 
 void GameScene::CheckAllCollisions() {

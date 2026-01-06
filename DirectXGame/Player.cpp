@@ -12,15 +12,30 @@ Player::~Player() {
 	for (PlayerBullet* bullet : bullets_) {
 		delete bullet;
 	}
+
+	delete sprite2DReticle_;
 }
 
-void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& position) {
+void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& position, Camera* camera) {
 	// NULLポインタチェック
 	assert(model);
 
 	// 引数として受け取ったデータをメンバ変数に記録する
 	model_ = model;
 	textureHandle_ = textureHandle;
+
+	// 3Dレティクルのワールドトランスフォーム初期化
+	worldTransform3DReticle_.Initialize();
+
+	// レティクル用テクスチャ取得
+	uint32_t textureReticle = TextureManager::Load("lockon.png");
+
+	// スプライト生成
+	sprite2DReticle_ = Sprite::Create(textureReticle, {0.0f}, Vector4{255, 255, 255, 255}, Vector2{0.5f, 0.5f});
+	sprite2DReticle_->SetSize(Vector2(100.0f, 100.0f));
+
+	// カメラ
+	camera_ = camera;
 
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
@@ -75,6 +90,38 @@ void Player::Update() {
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
+	// マウス座標(スクリーン座標）を取得する
+	GetCursorPos(&mousePosition);
+
+	// クライアントエリア座標に変換する
+	HWND hwnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hwnd, &mousePosition);
+
+	// マウス座標を2Dレティクルのスプライトに代入する
+	sprite2DReticle_->SetPosition({static_cast<float>(mousePosition.x), static_cast<float>(mousePosition.y)});
+
+	// ビューポート行列
+	Matrix4x4 matViewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+	Matrix4x4 matVPV = camera_->matView * camera_->matProjection * matViewport;
+	// 合成行列の逆行列を計算する
+	Matrix4x4 matInverseVPV = Inverse(matVPV);
+
+	// スクリーン座標
+	posNear = Vector3(static_cast<float>(mousePosition.x), static_cast<float>(mousePosition.y), 0);
+	Vector3 posFar = Vector3(static_cast<float>(mousePosition.x), static_cast<float>(mousePosition.y), 1);
+
+	// スクリーン座標系からワールド座標系へ
+	posNear = Transform(posNear, matInverseVPV);
+	posFar = Transform(posFar, matInverseVPV);
+
+	// マウスレイの方向
+	mouseDirection = posFar - posNear;
+	mouseDirection = Normalize(mouseDirection);
+	// カメラから昇順オブジェクトの距離
+	const float kDistanceTestObject = -80.0f;
+	worldTransform3DReticle_.translation_ = posNear - mouseDirection * kDistanceTestObject;
+	WorldTransformUpdate(worldTransform3DReticle_);
+
 	// プレイヤー攻撃処理
 	Attack();
 
@@ -92,14 +139,18 @@ void Player::Update() {
 	ImGui::End();
 }
 
-void Player::Draw(Camera& camera) {
+void Player::Draw() {
 	// 3Dモデルを描画
-	model_->Draw(worldTransform_, camera, textureHandle_);
+	model_->Draw(worldTransform_, *camera_, textureHandle_);
 
 	// 弾描画
 	for (PlayerBullet* bullet : bullets_) {
-		bullet->Draw(camera);
+		bullet->Draw(*camera_);
 	}
+}
+
+void Player::DrawUI() {
+	sprite2DReticle_->Draw();
 }
 
 void Player::Rotate() {
@@ -115,16 +166,26 @@ void Player::Rotate() {
 }
 
 void Player::Attack() {
-	if (input_->TriggerKey(DIK_SPACE)) {
+	if (input_->IsTriggerMouse(0)) {
+		// 0〜1 に正規化
+		float nx = static_cast<float>(mousePosition.x) / WinApp::kWindowWidth;
+		float ny = static_cast<float>(mousePosition.y) / WinApp::kWindowHeight;
+
+		// -1〜+1 に変換しつつ、Y は上が + になるよう反転
+		float sx = nx * 2.0f - 1.0f;
+		float sy = 1.0f - ny * 2.0f;
+
+		// プレイヤーの移動制限と対応させてワールド座標にマッピング
+		const float kMoveLimitX = 25.0f; // Player.cpp と同じ値
+		const float kMoveLimitY = 15.0f; // Player.cpp と同じ値
+
+		float worldX = sx * kMoveLimitX;
+		float worldY = sy * kMoveLimitY;
+
 		// 自キャラの座標をコピー
-		Vector3 position = GetWorldPosition();
+		Vector3 position = Vector3{worldX, worldY, -20.0f};
 
-		// 弾の速度
-		const float kBulletSpeed = 1.0f;
-		Vector3 velocity(0.0f, 0.0f, kBulletSpeed);
-
-		// 速度ベクトルを自機の向きに合わせて回転させる
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+		Vector3 velocity = {0.0f, 0.0f, kBulletSpeed};
 
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();

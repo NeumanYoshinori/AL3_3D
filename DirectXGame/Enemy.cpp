@@ -106,9 +106,10 @@ void Enemy::Fire() {
 	// ベクトルの長さを、速さに合わせる
 	velocity = e2p * kBulletSpeed;
 
+	bulletModel_ = Model::CreateFromOBJ("spiderWeb", true);
 	// 弾を生成し、初期化
 	EnemyBullet* newBullet = new EnemyBullet();
-	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	newBullet->Initialize(bulletModel_, worldTransform_.translation_, velocity);
 	newBullet->SetPlayer(player_);
 
 	// 弾を登録する

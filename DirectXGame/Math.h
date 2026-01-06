@@ -68,5 +68,8 @@ KamataEngine::Matrix4x4 MakeAffineMatrix(const KamataEngine::Vector3& scale, con
 // 逆行列
 KamataEngine::Matrix4x4 Inverse(const KamataEngine::Matrix4x4& m);
 
+// ビューポート行列を作成
+KamataEngine::Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
+
 // ワールド変換
 void WorldTransformUpdate(KamataEngine::WorldTransform& worldTransform);

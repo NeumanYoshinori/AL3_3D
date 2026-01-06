@@ -35,10 +35,7 @@ private:
 	KamataEngine::WorldTransform worldTransform_;
 
 	// モデル
-	static KamataEngine::Model* model_;
-
-	// テクスチャハンドル
-	uint32_t textureHandle_;
+	KamataEngine::Model* model_ = nullptr;
 
 	// 速度
 	KamataEngine::Vector3 velocity_;
@@ -53,7 +50,7 @@ private:
 
 	Player* player_ = nullptr;
 
-	const float kBulletSpeed = 0.2f;
+	const float kBulletSpeed = 0.05f;
 
 	float t = 0.2f;
 

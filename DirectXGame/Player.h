@@ -10,13 +10,13 @@ public:
 	~Player();
 
 	// 初期化
-	void Initialize(KamataEngine::Model* model, uint32_t texturehandle, const KamataEngine::Vector3& position);
+	void Initialize(KamataEngine::Model* model, uint32_t texturehandle, const KamataEngine::Vector3& position, KamataEngine::Camera* camera);
 
 	// 更新
 	void Update();
 
 	// 描画
-	void Draw(KamataEngine::Camera& camera);
+	void Draw();
 
 	// 旋回
 	void Rotate();
@@ -39,6 +39,9 @@ public:
 	// 親となるワールドトランスフォームをセット
 	void SetParent(const KamataEngine::WorldTransform* parent);
 
+	// UI描画
+	void DrawUI();
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -54,4 +57,21 @@ private:
 
 	// 半径
 	float radius = 0.5f;
+
+	// 3Dレティクル用ワールドトランスフォーム
+	KamataEngine::WorldTransform worldTransform3DReticle_;
+
+	// 2Dレティクル用スプライト
+	KamataEngine::Sprite* sprite2DReticle_ = nullptr;
+
+	// カメラ
+	KamataEngine::Camera* camera_ = nullptr;
+
+	// 弾の速度
+	const float kBulletSpeed = 2.0f;
+
+	POINT mousePosition;
+
+	KamataEngine::Vector3 mouseDirection = {};
+	KamataEngine::Vector3 posNear = {};
 };
