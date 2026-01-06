@@ -4,9 +4,17 @@
 #include "Enemy.h"
 #include "Skydome.h"
 #include "RailCameraController.h"
+#include "Fade.h"
 
 class GameScene {
 public:
+	// ゲームのフェーズ（型）
+	enum class Phase {
+		kFadeIn,  // フェードイン
+		kPlay,    // ゲームプレイ
+		kFadeOut, // フェードアウト
+	};
+
 	~GameScene();
 
 	// 初期化
@@ -23,6 +31,9 @@ public:
 
 	// コライダー2つの衝突判定と応答
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
+
+	// フェーズの切り替え
+	void ChangePhase();
 
 private:
 	// テクスチャハンドル
@@ -60,4 +71,12 @@ private:
 
 	KamataEngine::Vector3 railCameraPos = {0.0f};
 	KamataEngine::Vector3 railCameraAngle = {0.0f};
+
+	// ゲームの現在のフェーズ
+	Phase phase_;
+
+	Fade* fade_ = nullptr;
+
+	// 終了フラグ
+	bool finished_ = false;
 };

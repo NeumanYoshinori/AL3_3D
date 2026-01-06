@@ -42,6 +42,8 @@ public:
 	// UI描画
 	void DrawUI();
 
+	bool IsDead() { return isDead_; }
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -74,4 +76,6 @@ private:
 
 	KamataEngine::Vector3 mouseDirection = {};
 	KamataEngine::Vector3 posNear = {};
+
+	bool isDead_ = false;
 };

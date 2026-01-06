@@ -53,6 +53,8 @@ public:
 	// 半径を取得
 	float GetRadius() override { return radius; }
 
+	bool IsDead() const { return isDead; }
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -89,4 +91,6 @@ private:
 
 	// 半径
 	float radius = 0.5f;
+
+	bool isDead = false;
 };

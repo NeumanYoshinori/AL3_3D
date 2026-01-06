@@ -71,41 +71,110 @@ void GameScene::Initialize() {
 }
 	
 void GameScene::Update() {
+	// フェーズの変更
+	ChangePhase();
+
+	switch (phase_) {
+	case Phase::kFadeIn:
+		// フェードの更新
+		fade_->Update();
+
+		// フェードが終わったら次のフェーズに
+		if (fade_->IsFinished()) {
+			fade_->Start(Fade::Status::FadeOut, 1.0f);
+			phase_ = Phase::kPlay;
+		}
+
 #ifdef _DEBUG
-	if (input_->TriggerKey(DIK_RETURN)) {
-		isDebugCameraActive_ = !isDebugCameraActive_;
-	}
+		if (input_->TriggerKey(DIK_RETURN)) {
+			isDebugCameraActive_ = !isDebugCameraActive_;
+		}
 #endif
-	// カメラの処理
-	if (isDebugCameraActive_) {
-		// デバッグカメラの更新
-		debugCamera_->Update();
-		camera_.matView = debugCamera_->GetCamera().matView;
-		camera_.matProjection = debugCamera_->GetCamera().matProjection;
-		// ビュープロジェクション行列の転送
-		camera_.TransferMatrix();
-	} else {
-		// ビュープロジェクション行列の更新と転送
-		camera_.UpdateMatrix();
+		// カメラの処理
+		if (isDebugCameraActive_) {
+			// デバッグカメラの更新
+			debugCamera_->Update();
+			camera_.matView = debugCamera_->GetCamera().matView;
+			camera_.matProjection = debugCamera_->GetCamera().matProjection;
+			// ビュープロジェクション行列の転送
+			camera_.TransferMatrix();
+		} else {
+			// ビュープロジェクション行列の更新と転送
+			camera_.UpdateMatrix();
+		}
+
+		// 天球の更新
+		skydome_->Update();
+		break;
+	case Phase::kPlay:
+
+#ifdef _DEBUG
+		if (input_->TriggerKey(DIK_RETURN)) {
+			isDebugCameraActive_ = !isDebugCameraActive_;
+		}
+#endif
+		// カメラの処理
+		if (isDebugCameraActive_) {
+			// デバッグカメラの更新
+			debugCamera_->Update();
+			camera_.matView = debugCamera_->GetCamera().matView;
+			camera_.matProjection = debugCamera_->GetCamera().matProjection;
+			// ビュープロジェクション行列の転送
+			camera_.TransferMatrix();
+		} else {
+			// ビュープロジェクション行列の更新と転送
+			camera_.UpdateMatrix();
+		}
+
+		// 天球の更新
+		skydome_->Update();
+
+		// プレイヤーの更新
+		player_->Update();
+
+		// 敵の更新
+		enemy_->Update();
+
+		// 衝突判定と応答
+		CheckAllCollisions();
+
+		break;
+
+		case Phase::kFadeOut:
+		// フェードの更新
+		fade_->Update();
+
+		if (fade_->IsFinished()) {
+			finished_ = true;
+		}
+
+		// カメラの処理
+		if (isDebugCameraActive_) {
+			// デバッグカメラの更新
+			debugCamera_->Update();
+			camera_.matView = debugCamera_->GetCamera().matView;
+			camera_.matProjection = debugCamera_->GetCamera().matProjection;
+			// ビュープロジェクション行列の転送
+			camera_.TransferMatrix();
+		} else {
+			// ビュープロジェクション行列の更新と転送
+			camera_.UpdateMatrix();
+		}
+
+		// 天球の更新
+		skydome_->Update();
+
+		// プレイヤーの更新
+		player_->Update();
+
+		// 敵の更新
+		enemy_->Update();
+
+		// 衝突判定と応答
+		CheckAllCollisions();
+
+		break;	
 	}
-
-	// 天球の更新
-	skydome_->Update();
-
-	// プレイヤーの更新
-	player_->Update();
-
-	// 敵の更新
-	enemy_->Update();
-
-	// レールカメラの更新
-	/*railCamera_->Update();
-	camera_.matView = railCamera_->GetCamera()->matView;
-	camera_.matProjection = railCamera_->GetCamera()->matProjection;
-	camera_.TransferMatrix();*/
-
-	// 衝突判定と応答
-	CheckAllCollisions();
 }
 
 void GameScene::Draw() {
@@ -179,5 +248,20 @@ void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
 		colliderA->OnCollision();
 		// コライダーBの衝突時コールバックを呼び出す
 		colliderB->OnCollision();
+	}
+}
+
+void GameScene::ChangePhase() {
+	// フェーズの変更
+	switch (phase_) {
+	case Phase::kPlay:
+		if (player_->IsDead() || enemy_->IsDead()) {
+			// 死亡演出フェーズに切り替え
+			phase_ = Phase::kFadeOut;
+		}
+
+		break;
+	case Phase::kFadeOut:
+		break;
 	}
 }

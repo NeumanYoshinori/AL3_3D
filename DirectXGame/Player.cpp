@@ -208,6 +208,7 @@ Vector3 Player::GetWorldPosition() {
 
 void Player::OnCollision() {
 	// 何もしない
+	isDead_ = true;
 }
 
 void Player::SetParent(const WorldTransform* parent) {
