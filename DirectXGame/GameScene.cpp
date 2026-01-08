@@ -68,6 +68,11 @@ void GameScene::Initialize() {
 	enemy_->Initialize(model_, enemyPosition);
 	// 敵キャラに自キャラのアドレスを渡す
 	enemy_->SetPlayer(player_);
+
+	// フェードの初期化
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 1.0f);
 }
 	
 void GameScene::Update() {

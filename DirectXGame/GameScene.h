@@ -35,6 +35,8 @@ public:
 	// フェーズの切り替え
 	void ChangePhase();
 
+	bool IsFinished() const { return finished_; }
+
 private:
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;

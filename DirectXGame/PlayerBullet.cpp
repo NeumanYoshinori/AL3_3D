@@ -39,11 +39,6 @@ void PlayerBullet::Update() {
 void PlayerBullet::Draw(const KamataEngine::Camera& camera) {
 	// モデルの描画
 	model_->Draw(worldTransform_, camera, textureHandle_);
-
-	// キャラクターの座標を画面表示する処理
-	ImGui::Begin(" ");
-	ImGui::DragFloat3("bulletPos", &worldTransform_.translation_.x, 0.01f);
-	ImGui::End();
 }
 
 Vector3 PlayerBullet::GetWorldPosition() {

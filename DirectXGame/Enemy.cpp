@@ -57,11 +57,6 @@ void Enemy::Update() {
 
 	// ワールドトランスフォーム更新
 	WorldTransformUpdate(worldTransform_);
-
-	// キャラクターの座標を画面表示する処理
-	ImGui::Begin(" ");
-	ImGui::DragFloat3("Enemy", &worldTransform_.translation_.x, 0.01f);
-	ImGui::End();
 }
 
 void Enemy::ApproachInitialize() {

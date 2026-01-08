@@ -1,5 +1,6 @@
 #include "Skydome.h"
 #include "Math.h"
+#include <cassert>
 
 using namespace KamataEngine;
 

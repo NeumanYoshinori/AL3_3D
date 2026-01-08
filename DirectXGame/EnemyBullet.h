@@ -30,6 +30,8 @@ public:
 	// 半径を取得
 	float GetRadius() override { return radius; }
 
+	bool IsDead() { return isDead_; }
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
