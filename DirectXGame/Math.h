@@ -47,6 +47,8 @@ KamataEngine::Vector3 CatmullRomInterpolation(const KamataEngine::Vector3& p0, c
 // CatmullRomスプライン曲線上の座標を得る
 KamataEngine::Vector3 CatmullRomPosition(const std::vector<KamataEngine::Vector3>& points, float t);
 
+KamataEngine::Vector3 GetTangent(const std::vector<KamataEngine::Vector3>& points, float t);
+
 // 代入演算子オーバーロード
 KamataEngine::Matrix4x4& operator*=(KamataEngine::Matrix4x4& lhm, const KamataEngine::Matrix4x4& rhm);
 

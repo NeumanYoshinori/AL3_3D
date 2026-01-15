@@ -32,7 +32,7 @@ private:
 	KamataEngine::Camera* camera_ = nullptr;
 
 	// 速度
-	KamataEngine::Vector3 velocity_ = {0.0f, 0.0f, 0.1f};
+	KamataEngine::Vector3 velocity_ = {0.1f, 0.1f, 0.1f};
 	// 角度
 	KamataEngine::Vector3 radian_ = {0.0f};
 
@@ -44,4 +44,12 @@ private:
         {20, 0,  0},
         {30, 0,  0},
 	};
+
+	// 線分の数
+	const size_t segmentCount = 100;
+
+	// 線分で描画する用の頂点リスト
+	std::vector<KamataEngine::Vector3> pointsDrawing;
+
+	float t = 0.0f;
 };

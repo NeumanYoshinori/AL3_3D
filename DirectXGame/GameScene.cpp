@@ -55,11 +55,11 @@ void GameScene::Initialize() {
 
 	// 自キャラの生成
 	player_ = new Player();
-	Vector3 playerPosition(0, 0, -50.0f);
+	Vector3 playerPosition(0, 0, 40.0f);
 	// 自キャラの初期化
 	player_->Initialize(model_, textureHandle_, playerPosition, &camera_);
 	// 自キャラとレールカメラの親子関係を結ぶ
-	//player_->SetParent(&railCamera_->GetWorldTransform());
+	player_->SetParent(&railCamera_->GetWorldTransform());
 
 	// 敵の生成
 	enemy_ = new Enemy();
@@ -143,6 +143,8 @@ void GameScene::Update() {
 		// 衝突判定と応答
 		CheckAllCollisions();
 
+		railCamera_->Update();
+
 		break;
 
 		case Phase::kFadeOut:
@@ -196,7 +198,7 @@ void GameScene::Draw() {
 	enemy_->Draw(camera_);
 
 	// レールカメラの描画
-	// railCamera_->Draw();
+	railCamera_->Draw();
 
 	Model::PostDraw();
 
