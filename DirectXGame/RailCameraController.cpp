@@ -17,20 +17,27 @@ void RailCameraController::Initialize(const Vector3& position, const Vector3& ra
 }
 
 void RailCameraController::Update() {
-	Vector3 forward = {};
-	for (int i = 0; i < segmentCount; i++) {
+	// 線分の数+1個分の頂点座標を計算
+	for (size_t i = 0; i < segmentCount + 1; i++) {
+		t = 1.0f / segmentCount * i;
+		Vector3 pos = CatmullRomPosition(controlPoints_, t);
+		// 描画用頂点リストに追加
+		pointsDrawing.push_back(pos);
+
+		float n = 0.01f;
+		Vector3 frontPos = CatmullRomPosition(controlPoints_, min(t + n, 1.0f));
+		frontPointsDrawing.push_back(frontPos);
+	}
+
+	for (size_t i = 0; i < segmentCount + 1; i++) {
 		Vector3 eye = pointsDrawing[i];
-		Vector3 target = CatmullRomPosition(controlPoints_, t + 0.01f);
-		// 敵弾から自キャラへのベクトルを計算
-		forward = target - eye;
-
-		const float speed = 1.0f;
-
-		// ベクトルを正規化する
+		Vector3 target = frontPointsDrawing[i];
+		Vector3 forward = target - eye;
 		Normalize(forward);
-		Normalize(velocity_);
-		// 球面線形補間
-		velocity_ = Slerp(velocity_, forward, t) * speed;
+
+		const float speed = 0.1f;
+
+		velocity_ += forward * speed;
 	}
 
 	// Y軸回り角度(θy)
@@ -39,25 +46,12 @@ void RailCameraController::Update() {
 	float velocityXZ = Length(Vector3{velocity_.x, 0.0f, velocity_.z});
 	// X回り角度(θx)a
 	worldTransform_.rotation_.x = atan2(-velocity_.y, velocityXZ);
+
 	worldTransform_.translation_ += velocity_;
+
 	// スケール、回転、平行移動を合成して行列を計算する
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
 	// カメラオブジェクトのワールド行列からビュー行列を計算する
 	camera_->matView = Inverse(worldTransform_.matWorld_);
-}
-
-void RailCameraController::Draw() {
-	// 線分の数+1個分の頂点座標を計算
-	for (size_t i = 0; i < segmentCount + 1; i++) {
-		t = 1.0f / segmentCount * i;
-		Vector3 pos = CatmullRomPosition(controlPoints_, t);
-		// 描画用頂点リストに追加
-		pointsDrawing.push_back(pos);
-	}
-
-	PrimitiveDrawer::GetInstance()->SetCamera(camera_);
-	for (int i = 0; i < segmentCount; i++) {
-		PrimitiveDrawer::GetInstance()->DrawLine3d(pointsDrawing[i], pointsDrawing[i + 1], Vector4{1.0f, 0.0f, 0.0f, 1.0f});
-	}
 }

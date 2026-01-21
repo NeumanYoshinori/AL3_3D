@@ -144,6 +144,9 @@ void GameScene::Update() {
 		CheckAllCollisions();
 
 		railCamera_->Update();
+		camera_.matView = railCamera_->GetCamera()->matView;
+		camera_.matProjection = railCamera_->GetCamera()->matProjection;
+		camera_.TransferMatrix();
 
 		break;
 
@@ -196,9 +199,6 @@ void GameScene::Draw() {
 
 	// 敵の描画
 	enemy_->Draw(camera_);
-
-	// レールカメラの描画
-	railCamera_->Draw();
 
 	Model::PostDraw();
 

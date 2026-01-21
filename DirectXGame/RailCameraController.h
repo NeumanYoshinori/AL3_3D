@@ -14,11 +14,6 @@ public:
 	/// </summary>
 	void Update();
 
-	/// <summary>
-	/// 描画
-	/// </summary>
-	void Draw();
-
 	// カメラを取得
 	KamataEngine::Camera* GetCamera() { return camera_; }
 
@@ -50,6 +45,8 @@ private:
 
 	// 線分で描画する用の頂点リスト
 	std::vector<KamataEngine::Vector3> pointsDrawing;
+	// 目標
+	std::vector<KamataEngine::Vector3> frontPointsDrawing;
 
 	float t = 0.0f;
 };
