@@ -198,16 +198,6 @@ Vector3 CatmullRomPosition(const vector<Vector3>& points, float t) {
 	return CatmullRomInterpolation(p0, p1, p2, p3, t_2);
 }
 
-Vector3 GetTangent(const vector<Vector3>& points, float t) {
-	float n = 0.01f;
-	Vector3 eye = CatmullRomPosition(points, t);
-	Vector3 target = CatmullRomPosition(points, min(t + n, 1.0f));
-
-	Vector3 direction = target - eye;
-
-	return Normalize(direction);
-}
-
 Matrix4x4& operator*=(Matrix4x4& lhm, const Matrix4x4& rhm) {
 	Matrix4x4 result{};
 

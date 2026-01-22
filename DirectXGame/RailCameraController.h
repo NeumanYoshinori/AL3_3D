@@ -20,6 +20,9 @@ public:
 	// ワールドトランスフォームを取得
 	KamataEngine::WorldTransform& GetWorldTransform() { return worldTransform_; }
 
+	// 制御点を取得
+	std::vector<KamataEngine::Vector3> GetControlPoints() { return controlPoints_; }
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -27,7 +30,7 @@ private:
 	KamataEngine::Camera* camera_ = nullptr;
 
 	// 速度
-	KamataEngine::Vector3 velocity_ = {0.1f, 0.1f, 0.1f};
+	KamataEngine::Vector3 velocity_ = {0.0f};
 	// 角度
 	KamataEngine::Vector3 radian_ = {0.0f};
 
@@ -40,13 +43,6 @@ private:
         {30, 0,  0},
 	};
 
-	// 線分の数
-	const size_t segmentCount = 100;
-
-	// 線分で描画する用の頂点リスト
-	std::vector<KamataEngine::Vector3> pointsDrawing;
-	// 目標
-	std::vector<KamataEngine::Vector3> frontPointsDrawing;
-
 	float t = 0.0f;
+	const float speed = 0.001f;
 };

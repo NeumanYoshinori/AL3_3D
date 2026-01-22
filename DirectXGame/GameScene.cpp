@@ -200,6 +200,22 @@ void GameScene::Draw() {
 	// 敵の描画
 	enemy_->Draw(camera_);
 
+	// レールカメラの描画
+	// 線分の数
+	const size_t segmentCount = 100;
+	// 線分の数+1個分の頂点座標を計算
+	for (size_t i = 0; i < segmentCount + 1; i++) {
+		float drawT = 1.0f / segmentCount * i;
+		Vector3 pos = CatmullRomPosition(railCamera_->GetControlPoints(), drawT);
+		// 描画用頂点リストに追加
+		pointsDrawing.push_back(pos);
+	}
+
+	PrimitiveDrawer::GetInstance()->SetCamera(&camera_);
+	for (size_t i = 0; i < segmentCount; i++) {
+		PrimitiveDrawer::GetInstance()->DrawLine3d(pointsDrawing[i], pointsDrawing[i + 1], Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+	}
+
 	Model::PostDraw();
 
 	Sprite::PreDraw(dxCommon->GetCommandList());

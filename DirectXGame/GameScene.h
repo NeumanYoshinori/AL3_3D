@@ -81,4 +81,7 @@ private:
 
 	// 終了フラグ
 	bool finished_ = false;
+
+	// 線分で描画する用の頂点リスト
+	std::vector<KamataEngine::Vector3> pointsDrawing;
 };
