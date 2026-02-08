@@ -73,7 +73,7 @@ void DrawScene() {
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// 初期化
-	Initialize(L"LE2C_22_ニューマン_ヨシノリ_AL3");
+	Initialize(L"LE2C_22_ニューマン_ヨシノリ_ウェブハンター");
 
 	// DirectXCommonのインスタンスの取得
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();

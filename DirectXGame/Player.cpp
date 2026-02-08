@@ -14,6 +14,8 @@ Player::~Player() {
 	}
 
 	delete sprite2DReticle_;
+
+	delete bulletModel_;
 }
 
 void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& position, Camera* camera) {
@@ -22,6 +24,8 @@ void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& pos
 
 	// 引数として受け取ったデータをメンバ変数に記録する
 	model_ = model;
+
+	bulletModel_ = Model::CreateFromOBJ("playerBullet", true);
 	textureHandle_ = textureHandle;
 
 	// 3Dレティクルのワールドトランスフォーム初期化
@@ -184,7 +188,7 @@ void Player::Attack() {
 
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, position, velocity);
+		newBullet->Initialize(bulletModel_, position, velocity);
 
 		// 弾を登録する
 		bullets_.push_back(newBullet);
@@ -203,7 +207,11 @@ Vector3 Player::GetWorldPosition() {
 
 void Player::OnCollision() {
 	// 何もしない
-	isDead_ = true;
+	hp--;
+
+	if (hp == 0) {
+		isDead_ = true;
+	}
 }
 
 void Player::SetParent(const WorldTransform* parent) {

@@ -20,6 +20,8 @@ GameScene::~GameScene() {
 
 	// レールカメラコントローラーの解放
 	delete railCamera_;
+
+	delete modelEnemy_;
 }
 
 void GameScene::Initialize() {
@@ -61,11 +63,12 @@ void GameScene::Initialize() {
 	// 自キャラとレールカメラの親子関係を結ぶ
 	//player_->SetParent(&railCamera_->GetWorldTransform());
 
+	modelEnemy_ = Model::CreateFromOBJ("chimera", true);
 	// 敵の生成
 	enemy_ = new Enemy();
 	Vector3 enemyPosition = {5.0f, 4.0f, 4.0f};
 	// 敵の初期化
-	enemy_->Initialize(model_, enemyPosition);
+	enemy_->Initialize(modelEnemy_, enemyPosition);
 	// 敵キャラに自キャラのアドレスを渡す
 	enemy_->SetPlayer(player_);
 

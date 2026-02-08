@@ -77,5 +77,9 @@ private:
 	KamataEngine::Vector3 mouseDirection = {};
 	KamataEngine::Vector3 posNear = {};
 
+	int hp = 5;
+
 	bool isDead_ = false;
+
+	KamataEngine::Model* bulletModel_ = nullptr;
 };

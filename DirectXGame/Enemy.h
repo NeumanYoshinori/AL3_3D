@@ -63,9 +63,6 @@ private:
 	static KamataEngine::Model* model_;
 	KamataEngine::Model* bulletModel_ = nullptr;
 
-	// テクスチャハンドル
-	uint32_t textureHandle_;
-
 	// フェーズ
 	Phase phase_ = Phase::Approach;
 
@@ -81,7 +78,7 @@ private:
 	std::list<EnemyBullet*> bullets_;
 
 	// 発射間隔
-	static const int kFireInterval = 600;
+	static const int kFireInterval = 200;
 
 	// 発射タイマー
 	int32_t fireTimer = 0;
@@ -93,4 +90,6 @@ private:
 	float radius = 0.5f;
 
 	bool isDead = false;
+
+	int hp = 20;
 };

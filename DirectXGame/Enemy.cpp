@@ -19,8 +19,6 @@ void Enemy::Initialize(Model* model, const Vector3& position) {
 	assert(model);
 
 	model_ = model;
-	// テクスチャ読み込み
-	textureHandle_ = TextureManager::Load("enemyPlane.jpg");
 
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
@@ -113,7 +111,7 @@ void Enemy::Fire() {
 
 void Enemy::Draw(const Camera& camera) {
 	// モデルの描画
-	model_->Draw(worldTransform_, camera, textureHandle_);
+	model_->Draw(worldTransform_, camera);
 
 	// 弾描画
 	for (EnemyBullet* bullet : bullets_) {
@@ -132,5 +130,9 @@ Vector3 Enemy::GetWorldPosition() {
 
 void Enemy::OnCollision() {
 	// 何もしない
-	isDead = true;
+	hp--;
+
+	if (hp == 0) {
+		isDead = true;
+	}
 }

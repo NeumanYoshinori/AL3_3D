@@ -81,4 +81,6 @@ private:
 
 	// 終了フラグ
 	bool finished_ = false;
+
+	KamataEngine::Model* modelEnemy_ = nullptr;
 };

@@ -15,7 +15,7 @@ TitleScene::~TitleScene() {
 
 void TitleScene::Initialize() {
 	// 3Dモデルデータの生成
-	modelTitle_ = Model::CreateFromOBJ("titleFont", true);
+	modelTitle_ = Model::CreateFromOBJ("WebHunter", true);
 	modelPlayer_ = Model::CreateFromOBJ("spiderWeb");
 
 	// ワールドトランスフォームの初期化
